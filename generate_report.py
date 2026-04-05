@@ -30,7 +30,7 @@ T_BODY  = mks('bd',  fontName='Helvetica', fontSize=10, leading=14,
                spaceAfter=5, alignment=TA_JUSTIFY)
 T_BUL   = mks('bl',  fontName='Helvetica', fontSize=10, leading=14,
                spaceAfter=2, leftIndent=20)
-T_CODE  = mks('cd',  fontName='Courier', fontSize=8, leading=11,
+T_CODE  = mks('cd',  fontName='Courier', fontSize=7.5, leading=10.5,
                backColor=LGRAY, leftIndent=6, rightIndent=6, spaceAfter=8, spaceBefore=2)
 T_CELL  = mks('cl',  fontName='Helvetica', fontSize=10, leading=13)
 T_CELLB = mks('clb', fontName='Helvetica-Bold', fontSize=10, leading=13, textColor=WHITE)
@@ -78,7 +78,6 @@ def sp(n=6):
     return Spacer(1, n)
 
 def screenshot(filename, caption):
-    """Add a real screenshot if available (checks .png, .jpg, .jpeg), otherwise show placeholder."""
     base = os.path.splitext(filename)[0]
     folder = '/home/user/Pharmacy_management_system/screenshots/'
     path = None
@@ -127,6 +126,11 @@ def on_page(canvas, doc):
     canvas.drawCentredString(W/2, 0.6*cm, f'Page {doc.page}')
     canvas.restoreState()
 
+def read_java(rel_path):
+    full = os.path.join('/home/user/Pharmacy_management_system/src', rel_path)
+    with open(full, 'r', encoding='utf-8') as f:
+        return f.read()
+
 OUT = '/home/user/Pharmacy_management_system/PharmacyManagementSystem_Report.pdf'
 doc = SimpleDocTemplate(OUT, pagesize=A4,
                         leftMargin=2.5*cm, rightMargin=2.5*cm,
@@ -161,7 +165,6 @@ story += [sp(20)]
 
 story.append(Paragraph('Team Members', mks('tmh', fontName='Helvetica-Bold', fontSize=12,
                                             textColor=DARK, alignment=TA_CENTER, spaceAfter=6)))
-# ── UPDATED TEAM MEMBERS ───────────────────────────────────────────────────
 team_tbl = simple_table(
     ['Name', 'Register Number', 'Roll No.'],
     [['Kenneth Martin',        '240962047', '8'],
@@ -204,493 +207,240 @@ story.append(body(
 story.append(sec_hdr('Implementation Details'))
 story += [sp(6)]
 story.append(body(
-    'This project was implemented in the Java programming language. The application utilizes '
-    'object-oriented programming principles to manage pharmacy operations effectively.'
+    'This project was implemented in the Java programming language using JavaFX for the '
+    'graphical user interface. The application utilizes object-oriented programming principles '
+    'to manage pharmacy operations effectively. The project contains 32 Java source files '
+    'organized into four packages: model, service, ui, and util.'
 ))
-story.append(body('The system has the following files, containing the mentioned classes and methods:'))
+story.append(body('The complete list of source files is:'))
 
-files = ['PharmacyApp.java','LoginScreen.java','DashboardScreen.java','Medicine.java',
-         'InventoryManager.java','BillingService.java','Customer.java / CustomerService.java',
-         'DataStore.java']
-for f in files:
-    story.append(bul(f))
+all_files = [
+    # model
+    'com/pharmacy/model/Medicine.java',
+    'com/pharmacy/model/MedicineCategory.java',
+    'com/pharmacy/model/UserRole.java',
+    'com/pharmacy/model/Customer.java',
+    'com/pharmacy/model/Supplier.java',
+    'com/pharmacy/model/Bill.java',
+    'com/pharmacy/model/BillItem.java',
+    'com/pharmacy/model/Prescription.java',
+    'com/pharmacy/model/PrescriptionItem.java',
+    'com/pharmacy/model/User.java',
+    # service
+    'com/pharmacy/service/InventoryManager.java',
+    'com/pharmacy/service/BillingService.java',
+    'com/pharmacy/service/CustomerService.java',
+    'com/pharmacy/service/SupplierService.java',
+    'com/pharmacy/service/PrescriptionService.java',
+    'com/pharmacy/service/UserService.java',
+    'com/pharmacy/service/ExpiryAlertThread.java',
+    'com/pharmacy/service/StockAlertThread.java',
+    'com/pharmacy/service/BillingThread.java',
+    'com/pharmacy/service/BackupService.java',
+    # ui
+    'com/pharmacy/ui/PharmacyApp.java',
+    'com/pharmacy/ui/LoginScreen.java',
+    'com/pharmacy/ui/DashboardScreen.java',
+    'com/pharmacy/ui/InventoryScreen.java',
+    'com/pharmacy/ui/BillingScreen.java',
+    'com/pharmacy/ui/SupplierScreen.java',
+    'com/pharmacy/ui/CustomerScreen.java',
+    'com/pharmacy/ui/PrescriptionScreen.java',
+    'com/pharmacy/ui/ReportsScreen.java',
+    # util
+    'com/pharmacy/util/DataStore.java',
+    'com/pharmacy/util/IDGenerator.java',
+    'com/pharmacy/util/SampleDataLoader.java',
+]
+
+for f in all_files:
+    story.append(bul(f.split('/')[-1]))
 
 story += [sp(8)]
 
-# ── FILE EXPLANATIONS ──────────────────────────────────────────────────────
+# ── FILE DESCRIPTIONS ──────────────────────────────────────────────────────
+file_descriptions = {
+    'Medicine.java':
+        'Main model representing a medicine/drug item. Implements Serializable and '
+        'Comparable<Medicine>. Uses Integer and Double wrapper classes with autoboxing/unboxing. '
+        'Has constructor overloading (with and without supplierId) and a compareTo() method '
+        'enabling Collections.sort() by medicine name.',
+    'MedicineCategory.java':
+        'Enum defining the available medicine categories: TABLET, CAPSULE, SYRUP, INJECTION, '
+        'OINTMENT, DROPS, INHALER, and POWDER. Demonstrates the use of Java enumerations.',
+    'UserRole.java':
+        'Enum defining user roles in the system: ADMIN and PHARMACIST. Used for role-based '
+        'access control throughout the application.',
+    'Customer.java':
+        'Model class representing a pharmacy customer. Implements Serializable for persistent '
+        'storage. Contains customerId, name, phone, email, and address fields with getters/setters.',
+    'Supplier.java':
+        'Model class representing a medicine supplier. Implements Serializable. Contains '
+        'supplierId, companyName, contactPerson, phone, email, and address fields.',
+    'Bill.java':
+        'Model class representing a billing transaction. Contains overloaded applyDiscount() '
+        'methods demonstrating method overloading. Stores bill items, total amount, and date.',
+    'BillItem.java':
+        'Represents a single line item in a bill. Uses Integer for quantity and Double for '
+        'unitPrice and subtotal, demonstrating wrapper classes and autoboxing.',
+    'Prescription.java':
+        'Represents a medical prescription issued to a customer. Contains a list of '
+        'PrescriptionItem objects and links to the customer and prescribing doctor.',
+    'PrescriptionItem.java':
+        'Represents a single medicine entry within a prescription, including medicine name, '
+        'dosage, and quantity instructions.',
+    'User.java':
+        'Represents a system user with username, password, fullName, and UserRole. Contains '
+        'an authenticate() method that validates login credentials.',
+    'InventoryManager.java':
+        'Core service class managing the medicine inventory. Uses ArrayList for ordered storage '
+        'and HashMap for fast lookup. All write methods are synchronized for thread safety. '
+        'Uses Iterator for safe deletion, and Collections.sort() with both Comparable and '
+        'Comparator for flexible sorting.',
+    'BillingService.java':
+        'Handles all billing operations: creating bills, adding items, calculating totals, '
+        'applying discounts, and generating invoice text files using FileWriter. All methods '
+        'are synchronized.',
+    'CustomerService.java':
+        'Provides CRUD operations for customer records using ArrayList and HashMap. Uses '
+        'Iterator for safe removal. Persists data using DataStore serialization.',
+    'SupplierService.java':
+        'Provides CRUD operations for supplier records using ArrayList and HashMap. Uses '
+        'Iterator for safe removal. Persists data using DataStore serialization.',
+    'PrescriptionService.java':
+        'Manages prescription records with full CRUD support. Uses ArrayList and HashMap, '
+        'Iterator for deletion, and DataStore for serialized persistence.',
+    'UserService.java':
+        'Handles user authentication and management. Creates default admin and pharmacist '
+        'accounts on first run. Validates credentials using User.authenticate().',
+    'ExpiryAlertThread.java':
+        'Background thread that monitors medicines approaching their expiry date. Extends the '
+        'Thread class directly, runs as a daemon thread, uses sleep(30000) to check every 30 '
+        'seconds, and uses wait()/notify() for synchronization.',
+    'StockAlertThread.java':
+        'Background thread that monitors low stock levels. Implements the Runnable interface '
+        '(second threading approach). Uses a volatile boolean flag for graceful shutdown and '
+        'a synchronized checkStock() method.',
+    'BillingThread.java':
+        'Processes billing operations asynchronously. Extends Thread and uses sleep() and '
+        'join(). Defines a BillingCallback inner interface for returning results to the UI '
+        'thread via Platform.runLater().',
+    'BackupService.java':
+        'Implements Runnable to perform periodic data backups. Calls DataStore.backupToText() '
+        'for all five service classes to write human-readable backup files.',
+    'PharmacyApp.java':
+        'Main JavaFX Application entry point. Extends Application and overrides start(). '
+        'Initializes all service objects, starts background threads, loads sample data on '
+        'first run, and manages screen navigation using Stage.setScene().',
+    'LoginScreen.java':
+        'Login interface built with GridPane. Uses PasswordField to mask passwords and '
+        'validates credentials via UserService. Supports Admin and Pharmacist roles and '
+        'redirects to the Dashboard on successful login.',
+    'DashboardScreen.java':
+        'Main dashboard displayed after login. Uses BorderPane with an HBox top bar and a '
+        'GridPane of six navigation buttons. Displays the logged-in user\'s name and role, '
+        'and provides a Logout button.',
+    'InventoryScreen.java':
+        'Full inventory management screen with a TableView showing all medicines. Provides '
+        'Add, Edit, Delete, Search by name, and Filter by category using a ComboBox. Supports '
+        'sorting by clicking column headers.',
+    'BillingScreen.java':
+        'Billing and sales screen. Allows staff to select a customer, add medicine items to '
+        'a bill, apply discounts, and process payment. Uses BillingThread for async processing '
+        'and Platform.runLater() to safely update the UI.',
+    'SupplierScreen.java':
+        'Supplier management screen with a TableView and full CRUD operations. Allows adding, '
+        'editing, and deleting supplier records with input validation.',
+    'CustomerScreen.java':
+        'Customer records screen with a TableView and full CRUD operations. Allows adding, '
+        'editing, and deleting customer records with input validation.',
+    'PrescriptionScreen.java':
+        'Prescription handling screen. Displays prescriptions in a ListView and shows details '
+        'in a TextArea. Allows creating new prescriptions with medicine items.',
+    'ReportsScreen.java':
+        'Reports and backup screen. Shows summary statistics (medicine count, customer count, '
+        'bill count) as cards. Provides a Backup button that triggers BackupService in a new '
+        'Thread. Also shows low stock and expiry alerts.',
+    'DataStore.java':
+        'Generic utility class DataStore<T extends Serializable> that handles all persistence. '
+        'saveAll() serializes an ArrayList using ObjectOutputStream + FileOutputStream. '
+        'loadAll() deserializes using ObjectInputStream + FileInputStream. backupToText() '
+        'writes readable text using FileWriter. readBackup() reads with FileReader. All methods '
+        'are synchronized.',
+    'IDGenerator.java':
+        'Utility class with synchronized static methods for generating unique IDs. Generates '
+        'IDs in the format MED-001, CUS-001, SUP-001, BIL-001, PRE-001 using an internal '
+        'counter for each type.',
+    'SampleDataLoader.java':
+        'Utility class that loads sample data on the first run of the application. Adds 10 '
+        'medicines, 3 customers, and 3 suppliers so the system has data to demonstrate.',
+}
+
+# ── DETAILED EXPLANATION OF EACH FILE ─────────────────────────────────────
 story.append(sec_hdr('Detailed Explanation of Each File'))
 story += [sp(6)]
 
-story.append(sub_hdr('1. PharmacyApp.java'))
-story.append(body('This file serves as the main entry point of the Pharmacy Management System. It extends the JavaFX Application class and overrides the start() method. It initializes all service objects, starts background monitoring threads for expiry and stock alerts, loads sample data on first run, and manages navigation between all screens using Stage.setScene(). This file contains JavaFX codes.'))
-story.append(body('Code for PharmacyApp.java file:'))
-story.append(code('''package com.pharmacy.ui;
-import com.pharmacy.service.*;
-import com.pharmacy.model.User;
-import javafx.application.Application;
-import javafx.stage.Stage;
-import java.io.File;
-
-public class PharmacyApp extends Application {
-    private UserService userService;
-    private InventoryManager inventoryManager;
-    private BillingService billingService;
-    private ExpiryAlertThread expiryAlertThread;
-    private Stage primaryStage;
-
-    @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        new File("data/invoices").mkdirs();
-        userService      = new UserService();
-        inventoryManager = new InventoryManager();
-        billingService   = new BillingService(inventoryManager);
-
-        // Thread subclass for expiry alerts
-        expiryAlertThread = new ExpiryAlertThread(inventoryManager);
-        expiryAlertThread.setDaemon(true);
-        expiryAlertThread.start();
-
-        // Runnable interface for stock alerts
-        StockAlertThread stockRunnable = new StockAlertThread(inventoryManager);
-        Thread stockThread = new Thread(stockRunnable, "StockAlertThread");
-        stockThread.setDaemon(true);
-        stockThread.start();
-
-        showLoginScreen();
-        primaryStage.setTitle("PharmaCare - Pharmacy Management System");
-        primaryStage.show();
-    }
-
-    public void showDashboard(User user) {
-        DashboardScreen dashboard = new DashboardScreen(this, user);
-        primaryStage.setScene(dashboard.getScene());
-    }
-
-    public static void main(String[] args) { launch(args); }
-}'''))
-
-story.append(sub_hdr('2. LoginScreen.java'))
-story.append(body('This file handles the login interface. The user must enter a valid username and password. The system supports two roles - Admin and Pharmacist. If credentials are incorrect or empty, a red error message is displayed. After successful login, the user is redirected to the Dashboard. The screen uses a GridPane for form layout and PasswordField to mask the password. This file contains JavaFX codes.'))
-story.append(body('Code for LoginScreen.java file:'))
-story.append(code('''package com.pharmacy.ui;
-import com.pharmacy.model.User;
-import com.pharmacy.service.UserService;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-
-public class LoginScreen {
-    private Scene scene;
-
-    public LoginScreen(PharmacyApp app, UserService userService) {
-        VBox mainLayout = new VBox(20);
-        mainLayout.setAlignment(Pos.CENTER);
-        mainLayout.setStyle("-fx-background-color: #2c3e50;");
-
-        Label titleLabel = new Label("PharmaCare");
-        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 36));
-        titleLabel.setStyle("-fx-text-fill: #ecf0f1;");
-
-        GridPane grid = new GridPane();  // GridPane for form layout
-        grid.setHgap(10);  grid.setVgap(15);
-        grid.setStyle("-fx-background-color: #34495e; -fx-background-radius: 10;");
-
-        TextField usernameField = new TextField();
-        PasswordField passwordField = new PasswordField();
-        Label messageLabel = new Label();
-        messageLabel.setStyle("-fx-text-fill: #e74c3c;");
-
-        Button loginBtn = new Button("Login");
-        loginBtn.setOnAction(e -> {
-            String username = usernameField.getText().trim();
-            String password = passwordField.getText().trim();
-            if (username.isEmpty() || password.isEmpty()) {
-                messageLabel.setText("Username and password cannot be empty.");
-                return;
-            }
-            User user = userService.authenticate(username, password);
-            if (user != null) app.showDashboard(user);
-            else messageLabel.setText("Invalid credentials! Please try again.");
-        });
-
-        grid.add(new Label("Username:"), 0, 0); grid.add(usernameField, 1, 0);
-        grid.add(new Label("Password:"), 0, 1); grid.add(passwordField, 1, 1);
-        grid.add(loginBtn, 0, 2, 2, 1);
-        grid.add(messageLabel, 0, 3, 2, 1);
-        mainLayout.getChildren().addAll(titleLabel, grid);
-        scene = new Scene(mainLayout, 1100, 700);
-    }
-    public Scene getScene() { return scene; }
-}'''))
-
-story.append(sub_hdr('3. DashboardScreen.java'))
-story.append(body('This file handles the main dashboard displayed after login. The user can navigate to six modules: Inventory, Billing, Supplier, Customer, Prescription, and Reports. The dashboard shows the logged-in user\'s name and role in the top bar. A logout button redirects to the login screen. This file contains JavaFX codes.'))
-story.append(body('Code for DashboardScreen.java file:'))
-story.append(code('''package com.pharmacy.ui;
-import com.pharmacy.model.User;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-
-public class DashboardScreen {
-    private Scene scene;
-
-    public DashboardScreen(PharmacyApp app, User currentUser) {
-        BorderPane root = new BorderPane();
-        HBox topBar = new HBox(20);
-        topBar.setStyle("-fx-background-color: #2c3e50;");
-        Label title = new Label("PharmaCare Dashboard");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 22));
-        title.setStyle("-fx-text-fill: white;");
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        Button logoutBtn = new Button("Logout");
-        logoutBtn.setOnAction(e -> app.showLoginScreen());
-        topBar.getChildren().addAll(title, spacer, logoutBtn);
-
-        GridPane moduleGrid = new GridPane();  // GridPane for module layout
-        moduleGrid.setAlignment(Pos.CENTER);
-        moduleGrid.setHgap(25);  moduleGrid.setVgap(25);
-
-        Button inventoryBtn = createModuleButton("Inventory Management", "#3498db");
-        Button billingBtn   = createModuleButton("Sales and Billing",    "#27ae60");
-        Button supplierBtn  = createModuleButton("Supplier Management",  "#e67e22");
-        Button customerBtn  = createModuleButton("Customer Records",     "#9b59b6");
-        Button presBtn      = createModuleButton("Prescription Handling","#1abc9c");
-        Button reportsBtn   = createModuleButton("Reports and Alerts",   "#e74c3c");
-
-        inventoryBtn.setOnAction(e -> app.showInventoryScreen());
-        billingBtn.setOnAction(e -> app.showBillingScreen());
-
-        moduleGrid.add(inventoryBtn,0,0); moduleGrid.add(billingBtn,1,0);
-        moduleGrid.add(supplierBtn,2,0);  moduleGrid.add(customerBtn,0,1);
-        moduleGrid.add(presBtn,1,1);      moduleGrid.add(reportsBtn,2,1);
-
-        root.setTop(topBar); root.setCenter(moduleGrid);
-        scene = new Scene(root, 1100, 700);
-    }
-
-    private Button createModuleButton(String title, String color) {
-        Button btn = new Button(title);
-        btn.setPrefSize(230, 130);
-        btn.setStyle("-fx-background-color:" + color + ";-fx-text-fill:white;" +
-                     "-fx-font-size:15;-fx-background-radius:10;");
-        return btn;
-    }
-    public Scene getScene() { return scene; }
-}'''))
-
-story.append(sub_hdr('4. Medicine.java'))
-story.append(body('This file handles medicine information. It implements Serializable for data persistence and Comparable for sorting by name. It demonstrates Encapsulation through private fields, Wrapper classes (Integer, Double) with autoboxing/unboxing, and constructor overloading.'))
-story.append(body('Code for Medicine.java file:'))
-story.append(code('''package com.pharmacy.model;
-import java.io.Serializable;
-
-public class Medicine implements Serializable, Comparable<Medicine> {
-    private static final long serialVersionUID = 1L;
-    private String medicineId, name, manufacturer, batchNumber, expiryDate, supplierId;
-    private MedicineCategory category;   // Enum
-    private Integer quantity;            // Wrapper class (autoboxing)
-    private Double  price;               // Wrapper class (autoboxing)
-
-    // Parameterized constructor
-    public Medicine(String medicineId, String name, String manufacturer,
-                    MedicineCategory category, String batchNumber,
-                    String expiryDate, int quantity, double price, String supplierId) {
-        this.medicineId  = medicineId; this.name = name;
-        this.manufacturer = manufacturer; this.category = category;
-        this.batchNumber = batchNumber;  this.expiryDate = expiryDate;
-        this.quantity = quantity;  // Autoboxing: int -> Integer
-        this.price    = price;     // Autoboxing: double -> Double
-        this.supplierId = supplierId;
-    }
-
-    // Constructor overloading (without supplierId)
-    public Medicine(String medicineId, String name, String manufacturer,
-                    MedicineCategory category, String batchNumber,
-                    String expiryDate, int quantity, double price) {
-        this(medicineId, name, manufacturer, category, batchNumber, expiryDate, quantity, price, "");
-    }
-
-    @Override
-    public int compareTo(Medicine other) {
-        return this.name.compareToIgnoreCase(other.name); // Comparable for Collections.sort()
-    }
-
-    // Encapsulation - Getters and Setters
-    public String  getMedicineId() { return medicineId; }
-    public String  getName()       { return name; }
-    public Integer getQuantity()   { return quantity; }
-    public Double  getPrice()      { return price; }
-    public int     getQuantityPrimitive() { return quantity; } // Unboxing
-    public void setQuantity(Integer qty) { this.quantity = qty; }
-    public void setPrice(Double p)       { this.price = p; }
-
-    @Override
-    public String toString() {
-        return medicineId + " | " + name + " | Qty:" + quantity
-               + " | Rs." + String.format("%.2f", price) + " | Exp:" + expiryDate;
-    }
-}'''))
-
-story.append(sub_hdr('5. InventoryManager.java'))
-story.append(body('This file manages the medicine inventory. It uses an ArrayList for sequential storage and a HashMap for O(1) ID-based lookup. The Iterator is used during deletion to avoid ConcurrentModificationException. Collections.sort() sorts medicines by name, price, or expiry date. All critical methods are synchronized for thread safety.'))
-story.append(body('Code for InventoryManager.java file:'))
-story.append(code('''package com.pharmacy.service;
-import com.pharmacy.model.Medicine;
-import com.pharmacy.util.DataStore;
-import java.util.*;
-
-public class InventoryManager {
-    private ArrayList<Medicine> medicineList;
-    private HashMap<String, Medicine> medicineMap;
-    private DataStore<Medicine> dataStore;
-    private static final int LOW_STOCK_THRESHOLD = 10;
-
-    public InventoryManager() {
-        dataStore    = new DataStore<>("data/medicines.dat");
-        medicineList = dataStore.loadAll();
-        medicineMap  = new HashMap<>();
-        for (Medicine med : medicineList)
-            medicineMap.put(med.getMedicineId(), med);
-    }
-
-    public synchronized void addMedicine(Medicine medicine) {
-        medicineList.add(medicine);
-        medicineMap.put(medicine.getMedicineId(), medicine);
-        dataStore.saveAll(medicineList);
-    }
-
-    // Delete using Iterator (safe removal)
-    public synchronized void deleteMedicine(String id) {
-        Iterator<Medicine> it = medicineList.iterator();
-        while (it.hasNext()) {
-            if (it.next().getMedicineId().equals(id)) { it.remove(); break; }
-        }
-        medicineMap.remove(id);
-        dataStore.saveAll(medicineList);
-    }
-
-    public Medicine getMedicineById(String id) { return medicineMap.get(id); }
-
-    public ArrayList<Medicine> getSortedByName() {
-        ArrayList<Medicine> sorted = new ArrayList<>(medicineList);
-        Collections.sort(sorted); // Uses Comparable
-        return sorted;
-    }
-
-    public ArrayList<Medicine> getSortedByPrice() {
-        ArrayList<Medicine> sorted = new ArrayList<>(medicineList);
-        Collections.sort(sorted, (m1, m2) -> Double.compare(m1.getPrice(), m2.getPrice()));
-        return sorted;
-    }
-
-    public ArrayList<Medicine> getLowStockMedicines() {
-        ArrayList<Medicine> low = new ArrayList<>();
-        for (Medicine m : medicineList)
-            if (m.getQuantity() < LOW_STOCK_THRESHOLD) low.add(m);
-        return low;
-    }
-
-    public synchronized boolean reduceStock(String id, int qty) {
-        Medicine med = medicineMap.get(id);
-        if (med != null && med.getQuantity() >= qty) {
-            med.setQuantity(med.getQuantity() - qty);
-            dataStore.saveAll(medicineList);
-            return true;
-        }
-        return false;
-    }
-    public ArrayList<Medicine> getAllMedicines() { return medicineList; }
-    public int getMedicineCount()               { return medicineList.size(); }
-}'''))
-
-story.append(sub_hdr('6. BillingService.java'))
-story.append(body('This file manages all billing operations. When a bill is created, stock is reduced for each medicine and the bill is saved. A formatted invoice text file is generated using FileWriter. Billing is processed in a separate BillingThread to keep the UI responsive. The Bill class demonstrates method overloading with two versions of applyDiscount().'))
-story.append(body('Code for BillingService.java file:'))
-story.append(code('''package com.pharmacy.service;
-import com.pharmacy.model.Bill;
-import com.pharmacy.model.BillItem;
-import com.pharmacy.util.DataStore;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
-public class BillingService {
-    private ArrayList<Bill> billList;
-    private DataStore<Bill> dataStore;
-    private InventoryManager inventoryManager;
-
-    public BillingService(InventoryManager inventoryManager) {
-        this.inventoryManager = inventoryManager;
-        dataStore = new DataStore<>("data/bills.dat");
-        billList  = dataStore.loadAll();
-    }
-
-    public synchronized boolean createBill(Bill bill) {
-        for (BillItem item : bill.getItems()) {
-            boolean ok = inventoryManager.reduceStock(item.getMedicineId(), item.getQuantity());
-            if (!ok) return false;
-        }
-        billList.add(bill);
-        dataStore.saveAll(billList);
-        generateInvoice(bill);
-        return true;
-    }
-
-    public void generateInvoice(Bill bill) {  // FileWriter for invoice
-        String path = "data/invoices/" + bill.getBillId() + "_invoice.txt";
-        try (FileWriter writer = new FileWriter(path)) {
-            writer.write("===== PHARMACARE INVOICE =====\n");
-            writer.write("Invoice No : " + bill.getBillId() + "\n");
-            writer.write("Customer   : " + bill.getCustomerName() + "\n");
-            writer.write("Date       : " + bill.getDate() + "\n");
-            writer.write("-----------------------------\n");
-            for (BillItem item : bill.getItems())
-                writer.write(String.format("%-18s x%d = Rs.%.2f\n",
-                    item.getMedicineName(), item.getQuantity(), item.getSubtotal()));
-            writer.write("-----------------------------\n");
-            writer.write(String.format("Net Amount : Rs.%.2f\n", bill.getNetAmount()));
-        } catch (IOException e) { System.err.println("Invoice error: " + e.getMessage()); }
-    }
-
-    // Method overloading
-    public void applyDiscount(Bill bill, double percentage) { bill.applyDiscount(percentage); }
-    public void applyDiscount(Bill bill, double amount, boolean isFixed) { bill.applyDiscount(amount, isFixed); }
-
-    public double getTotalSales() {
-        double total = 0;
-        for (Bill b : billList) total += b.getNetAmount();
-        return total;
-    }
-    public ArrayList<Bill> getAllBills() { return billList; }
-}'''))
-
-story.append(sub_hdr('7. Customer.java / CustomerService.java'))
-story.append(body('These files handle customer information. Customer.java stores customer ID, name, phone, email, and address. CustomerService.java manages all CRUD operations using ArrayList for storage and HashMap for fast ID-based lookups. Iterator is used for safe deletion. Data is persisted via the generic DataStore class.'))
-story.append(body('Code for Customer.java file:'))
-story.append(code('''package com.pharmacy.model;
-import java.io.Serializable;
-
-public class Customer implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private String customerId, name, phone, email, address;
-
-    public Customer(String customerId, String name, String phone,
-                    String email, String address) {
-        this.customerId = customerId; this.name = name;
-        this.phone = phone; this.email = email; this.address = address;
-    }
-
-    public String getCustomerId() { return customerId; }
-    public String getName()       { return name; }
-    public String getPhone()      { return phone; }
-    public void setName(String n) { this.name = n; }
-
-    @Override
-    public String toString() { return customerId + " | " + name + " | " + phone; }
-}'''))
-story.append(body('Code for CustomerService.java file:'))
-story.append(code('''package com.pharmacy.service;
-import com.pharmacy.model.Customer;
-import com.pharmacy.util.DataStore;
-import java.util.*;
-
-public class CustomerService {
-    private ArrayList<Customer> customerList;
-    private HashMap<String, Customer> customerMap;
-    private DataStore<Customer> dataStore;
-
-    public CustomerService() {
-        dataStore    = new DataStore<>("data/customers.dat");
-        customerList = dataStore.loadAll();
-        customerMap  = new HashMap<>();
-        for (Customer c : customerList) customerMap.put(c.getCustomerId(), c);
-    }
-
-    public synchronized void addCustomer(Customer customer) {
-        customerList.add(customer);
-        customerMap.put(customer.getCustomerId(), customer);
-        dataStore.saveAll(customerList);
-    }
-
-    public synchronized void deleteCustomer(String id) {  // Iterator for safe delete
-        Iterator<Customer> it = customerList.iterator();
-        while (it.hasNext()) {
-            if (it.next().getCustomerId().equals(id)) { it.remove(); break; }
-        }
-        customerMap.remove(id);
-        dataStore.saveAll(customerList);
-    }
-
-    public Customer getCustomerById(String id) { return customerMap.get(id); } // O(1) lookup
-
-    public ArrayList<Customer> searchByName(String name) {
-        ArrayList<Customer> results = new ArrayList<>();
-        for (Customer c : customerList)
-            if (c.getName().toLowerCase().contains(name.toLowerCase())) results.add(c);
-        return results;
-    }
-    public ArrayList<Customer> getAllCustomers() { return customerList; }
-}'''))
-
-story.append(sub_hdr('8. DataStore.java'))
-story.append(body('This file handles all data persistence. It is a generic class (DataStore<T extends Serializable>) reusable across all service classes. It uses ObjectOutputStream and FileOutputStream to serialize (save) objects, and ObjectInputStream and FileInputStream to deserialize (load) them. FileWriter creates text backups and FileReader reads them. All methods are synchronized for thread safety.'))
-story.append(body('Code for DataStore.java file:'))
-story.append(code('''package com.pharmacy.util;
-import java.io.*;
-import java.util.ArrayList;
-
-public class DataStore<T extends Serializable> {  // Generic class
-    private String filePath;
-
-    public DataStore(String filePath) { this.filePath = filePath; }
-
-    // Serialization using ObjectOutputStream + FileOutputStream
-    public synchronized void saveAll(ArrayList<T> items) {
-        try (FileOutputStream fos = new FileOutputStream(filePath);
-             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-            oos.writeObject(items);
-        } catch (IOException e) { System.err.println("Save error: " + e.getMessage()); }
-    }
-
-    // Deserialization using ObjectInputStream + FileInputStream
-    @SuppressWarnings("unchecked")
-    public synchronized ArrayList<T> loadAll() {
-        File file = new File(filePath);
-        if (!file.exists()) return new ArrayList<>();
-        try (FileInputStream fis = new FileInputStream(filePath);
-             ObjectInputStream ois = new ObjectInputStream(fis)) {
-            return (ArrayList<T>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) { return new ArrayList<>(); }
-    }
-
-    // Text backup using FileWriter
-    public void backupToText(ArrayList<T> items, String backupPath) {
-        try (FileWriter writer = new FileWriter(backupPath)) {
-            writer.write("=== BACKUP: " + filePath + " ===\n");
-            for (T item : items) writer.write(item.toString() + "\n");
-        } catch (IOException e) { System.err.println("Backup error: " + e.getMessage()); }
-    }
-
-    // Read backup using FileReader
-    public String readBackup(String backupPath) {
-        StringBuilder sb = new StringBuilder();
-        try (FileReader reader = new FileReader(backupPath)) {
-            int ch;
-            while ((ch = reader.read()) != -1) sb.append((char) ch);
-        } catch (IOException e) { return "No backup found."; }
-        return sb.toString();
-    }
-}'''))
+# Group labels
+groups = [
+    ('Model Package (com.pharmacy.model)', [
+        'com/pharmacy/model/Medicine.java',
+        'com/pharmacy/model/MedicineCategory.java',
+        'com/pharmacy/model/UserRole.java',
+        'com/pharmacy/model/Customer.java',
+        'com/pharmacy/model/Supplier.java',
+        'com/pharmacy/model/Bill.java',
+        'com/pharmacy/model/BillItem.java',
+        'com/pharmacy/model/Prescription.java',
+        'com/pharmacy/model/PrescriptionItem.java',
+        'com/pharmacy/model/User.java',
+    ]),
+    ('Service Package (com.pharmacy.service)', [
+        'com/pharmacy/service/InventoryManager.java',
+        'com/pharmacy/service/BillingService.java',
+        'com/pharmacy/service/CustomerService.java',
+        'com/pharmacy/service/SupplierService.java',
+        'com/pharmacy/service/PrescriptionService.java',
+        'com/pharmacy/service/UserService.java',
+        'com/pharmacy/service/ExpiryAlertThread.java',
+        'com/pharmacy/service/StockAlertThread.java',
+        'com/pharmacy/service/BillingThread.java',
+        'com/pharmacy/service/BackupService.java',
+    ]),
+    ('UI Package (com.pharmacy.ui)', [
+        'com/pharmacy/ui/PharmacyApp.java',
+        'com/pharmacy/ui/LoginScreen.java',
+        'com/pharmacy/ui/DashboardScreen.java',
+        'com/pharmacy/ui/InventoryScreen.java',
+        'com/pharmacy/ui/BillingScreen.java',
+        'com/pharmacy/ui/SupplierScreen.java',
+        'com/pharmacy/ui/CustomerScreen.java',
+        'com/pharmacy/ui/PrescriptionScreen.java',
+        'com/pharmacy/ui/ReportsScreen.java',
+    ]),
+    ('Util Package (com.pharmacy.util)', [
+        'com/pharmacy/util/DataStore.java',
+        'com/pharmacy/util/IDGenerator.java',
+        'com/pharmacy/util/SampleDataLoader.java',
+    ]),
+]
+
+file_num = 1
+for group_title, file_list in groups:
+    story.append(Paragraph(group_title, mks(f'grp_{file_num}',
+        fontName='Helvetica-Bold', fontSize=12, textColor=BLUE,
+        spaceBefore=14, spaceAfter=6, leading=16)))
+    for rel_path in file_list:
+        fname = rel_path.split('/')[-1]
+        desc  = file_descriptions.get(fname, '')
+        story.append(sub_hdr(f'{file_num}. {fname}'))
+        if desc:
+            story.append(body(desc))
+        story.append(body(f'Code for {fname}:'))
+        src = read_java(rel_path)
+        story.append(code(src))
+        story += [sp(6)]
+        file_num += 1
+        print(f'  Added {fname}')
 
 print("Code sections done")
 
@@ -699,17 +449,16 @@ story.append(PageBreak())
 story.append(sec_hdr('Results'))
 story += [sp(6)]
 
-# Add real screenshots if available, otherwise placeholder text
 for fname, caption in [
-    ('login.png',     'Login Screen'),
-    ('login2.png',    'Login Screen - with Credentials'),
-    ('dashboard.png', 'Dashboard Screen'),
-    ('inventory.png', 'Inventory Management Screen'),
-    ('billing.png',   'Sales and Billing Screen'),
-    ('supplier.png',  'Supplier Management Screen'),
-    ('customer.png',  'Customer Records Screen'),
+    ('login.png',        'Login Screen'),
+    ('login2.png',       'Login Screen - with Credentials'),
+    ('dashboard.png',    'Dashboard Screen'),
+    ('inventory.png',    'Inventory Management Screen'),
+    ('billing.png',      'Sales and Billing Screen'),
+    ('supplier.png',     'Supplier Management Screen'),
+    ('customer.png',     'Customer Records Screen'),
     ('prescription.png', 'Prescription Handling Screen'),
-    ('reports.png',   'Reports and Alerts Screen'),
+    ('reports.png',      'Reports and Alerts Screen'),
 ]:
     for elem in screenshot(fname, caption):
         story.append(elem)
@@ -760,7 +509,8 @@ contribs = [
       'CustomerService.java / SupplierService.java',
       'PrescriptionService.java',
       'ExpiryAlertThread.java / StockAlertThread.java',
-      'BackupService.java', 'ReportsScreen.java']),
+      'BackupService.java', 'ReportsScreen.java',
+      'Supplier.java / Customer.java / Prescription.java / PrescriptionItem.java / BillItem.java']),
 ]
 
 for name, files in contribs:
