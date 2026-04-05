@@ -78,10 +78,17 @@ def sp(n=6):
     return Spacer(1, n)
 
 def screenshot(filename, caption):
-    """Add a real screenshot if available, otherwise skip."""
-    path = f'/home/user/Pharmacy_management_system/screenshots/{filename}'
+    """Add a real screenshot if available (checks .png, .jpg, .jpeg), otherwise show placeholder."""
+    base = os.path.splitext(filename)[0]
+    folder = '/home/user/Pharmacy_management_system/screenshots/'
+    path = None
+    for ext in [os.path.splitext(filename)[1], '.png', '.jpg', '.jpeg']:
+        candidate = os.path.join(folder, base + ext)
+        if os.path.exists(candidate):
+            path = candidate
+            break
     elems = [sub_hdr(caption)]
-    if os.path.exists(path):
+    if path:
         img = Image(path, width=COLW, height=COLW*0.62)
         elems.append(img)
     else:
