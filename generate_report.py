@@ -146,7 +146,7 @@ story += [sp(20)]
 info_data = [
     [Paragraph('Project Title', T_CELLB), Paragraph('Pharmacy Management System', T_CELL)],
     [Paragraph('Subject', T_CELLB),       Paragraph('Object-Oriented Programming (OOP)', T_CELL)],
-    [Paragraph('Academic Year', T_CELLB), Paragraph('2024 - 2025', T_CELL)],
+    [Paragraph('Academic Year', T_CELLB), Paragraph('2025 - 2026', T_CELL)],
 ]
 info_tbl = Table(info_data, colWidths=[COLW*0.35, COLW*0.65])
 info_tbl.setStyle(TableStyle([
