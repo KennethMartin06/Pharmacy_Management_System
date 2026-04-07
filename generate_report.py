@@ -180,13 +180,28 @@ story.append(PageBreak())
 story.append(sec_hdr('Introduction'))
 story += [sp(6)]
 story.append(body(
-    'The objective of this project is to design and implement a Pharmacy Management System (PMS) '
-    'using Java and JavaFX to manage medicine inventory, customer records, billing transactions, '
-    'supplier details, and prescription handling. This system enables pharmacy staff to register '
-    'and manage medicines in stock, generate bills and invoices for customers, handle prescriptions '
-    'provided by doctors, and receive automated alerts for low stock or expiring medicines. '
-    'The system also focuses on ensuring secure data handling through role-based access control '
-    'and persistent file-based storage using Java Serialization.'
+    'Pharmacies handle a surprisingly large amount of data every day. From tracking which medicines '
+    'are running low to generating bills for dozens of customers, the workload adds up fast. '
+    'Most small and mid-sized pharmacies still rely on paper registers or basic spreadsheets, '
+    'which honestly just creates more problems than it solves. Entries get missed, stock counts '
+    'go wrong, and nobody notices a batch of medicines is about to expire until it\'s too late.'
+))
+story.append(body(
+    'We built this Pharmacy Management System to fix exactly those kinds of problems. The system '
+    'is written in Java, with a JavaFX-based desktop interface that any pharmacy staff member '
+    'can use without much training. It covers the main things a pharmacy needs to keep track of: '
+    'the medicine stock, customer records, supplier contacts, billing and invoices, and '
+    'prescriptions from doctors. There\'s also a background alert system that automatically '
+    'warns staff when stock is low or medicines are close to their expiry date, without anyone '
+    'having to manually check.'
+))
+story.append(body(
+    'From an academic standpoint, this project was a chance for us to apply the OOP concepts '
+    'we\'ve been studying. Encapsulation, inheritance, polymorphism, abstraction, generics, '
+    'multithreading, serialization, collections - every one of those is used somewhere in this '
+    'codebase, not just as a checkbox but because it genuinely made the code cleaner and easier '
+    'to manage. Data is saved between sessions using Java Serialization, and access is controlled '
+    'by role so admins see everything while pharmacists only get what they need.'
 ))
 
 # ── PROBLEM STATEMENT ──────────────────────────────────────────────────────
@@ -195,24 +210,41 @@ story.append(sec_hdr('Problem Statement'))
 story += [sp(6)]
 story.append(sub_hdr('Pharmacy Management System with Inventory Control and Billing Automation'))
 story.append(body(
-    'Manual pharmacy operations are heavily dependent on paper-based records, leading to '
-    'frequent billing errors, poor stock management, and difficulty in tracking medicine '
-    'availability and expiry. Patients may receive incorrect medicines due to outdated records. '
-    'There is no automated mechanism to alert staff about low stock or expired medicines. '
-    'The Pharmacy Management System aims to automate and digitize all core pharmacy operations, '
-    'improving accuracy, efficiency, and reliability.'
+    'Walk into almost any small pharmacy and you\'ll likely see someone squinting at a handwritten '
+    'stock register trying to figure out whether a particular medicine is still available. '
+    'Billing is done on paper, which means calculation errors are common. Prescriptions get '
+    'stacked in a drawer and there\'s no easy way to look one up later. And when a medicine '
+    'expires on the shelf, nobody really knows until a customer points it out.'
+))
+story.append(body(
+    'These aren\'t edge cases - they\'re everyday problems that affect patient safety and '
+    'pharmacy efficiency. The goal of our project was to build a system that directly addresses '
+    'these issues. Instead of paper records, everything is stored digitally and can be searched '
+    'in seconds. Billing is automated so there are no arithmetic mistakes. Background threads '
+    'continuously monitor stock levels and expiry dates, sending alerts before problems occur. '
+    'The whole system is designed for the kind of pharmacy that doesn\'t have a dedicated IT '
+    'team but still needs reliable software to run smoothly.'
 ))
 
 # ── IMPLEMENTATION DETAILS ─────────────────────────────────────────────────
 story.append(sec_hdr('Implementation Details'))
 story += [sp(6)]
 story.append(body(
-    'This project was implemented in the Java programming language using JavaFX for the '
-    'graphical user interface. The application utilizes object-oriented programming principles '
-    'to manage pharmacy operations effectively. The project contains 32 Java source files '
-    'organized into four packages: model, service, ui, and util.'
+    'The entire project is built in Java, using JavaFX for the graphical front-end. '
+    'We organized everything into four packages - model, service, ui, and util - which kept '
+    'the code from turning into a mess as it grew. There are 32 Java source files in total. '
+    'The model package holds all the data classes. Service classes handle the actual logic '
+    'and talk to the data layer. The ui package contains every screen in the application. '
+    'And util has the shared helper stuff like ID generation and file persistence.'
 ))
-story.append(body('The complete list of source files is:'))
+story.append(body(
+    'One design decision we made early on was to keep the service layer completely separate '
+    'from the UI. That way the business logic doesn\'t get tangled up with button clicks and '
+    'text fields, and it\'s much easier to test individual parts. We also made all write '
+    'operations synchronized since the app runs background threads that could otherwise '
+    'cause data corruption.'
+))
+story.append(body('All 32 source files in the project:'))
 
 all_files = [
     # model
@@ -261,119 +293,197 @@ story += [sp(8)]
 # ── FILE DESCRIPTIONS ──────────────────────────────────────────────────────
 file_descriptions = {
     'Medicine.java':
-        'Main model representing a medicine/drug item. Implements Serializable and '
-        'Comparable<Medicine>. Uses Integer and Double wrapper classes with autoboxing/unboxing. '
-        'Has constructor overloading (with and without supplierId) and a compareTo() method '
-        'enabling Collections.sort() by medicine name.',
+        'This is the core data class for a medicine item in the inventory. It implements both '
+        'Serializable (so it can be saved to disk) and Comparable<Medicine> (so we can sort '
+        'lists of medicines by name). We used Integer and Double wrapper classes for the '
+        'quantity and price fields specifically to show autoboxing and unboxing in action. '
+        'There are two constructors - one that takes a supplierId and one that doesn\'t - '
+        'which covers constructor overloading. The compareTo() method is what powers '
+        'Collections.sort() when we sort the inventory list.',
     'MedicineCategory.java':
-        'Enum defining the available medicine categories: TABLET, CAPSULE, SYRUP, INJECTION, '
-        'OINTMENT, DROPS, INHALER, and POWDER. Demonstrates the use of Java enumerations.',
+        'A simple but useful enum for medicine types. Rather than storing category as a raw '
+        'String (which is error-prone), we defined a proper enum with values like TABLET, '
+        'CAPSULE, SYRUP, INJECTION, OINTMENT, DROPS, INHALER, and POWDER. Each value has '
+        'a display-friendly name string attached. This gets used in the inventory form\'s '
+        'dropdown and for filtering the inventory table by category.',
     'UserRole.java':
-        'Enum defining user roles in the system: ADMIN and PHARMACIST. Used for role-based '
-        'access control throughout the application.',
+        'Another enum, this one for controlling what a logged-in user is allowed to do. '
+        'ADMIN gets full access across the system while PHARMACIST has a more limited view. '
+        'We stored the canManageUsers flag directly inside the enum so the permission check '
+        'is just a method call rather than a series of if-else comparisons scattered around '
+        'the codebase.',
     'Customer.java':
-        'Model class representing a pharmacy customer. Implements Serializable for persistent '
-        'storage. Contains customerId, name, phone, email, and address fields with getters/setters.',
+        'A straightforward model class for storing patient/customer information. It holds '
+        'the customer ID, name, phone, email, and address. Implements Serializable so the '
+        'CustomerService can persist the list to disk. Most of the code here is getters and '
+        'setters plus a toString() that gives a readable summary line.',
     'Supplier.java':
-        'Model class representing a medicine supplier. Implements Serializable. Contains '
-        'supplierId, companyName, contactPerson, phone, email, and address fields.',
+        'Stores details about a medicine supplier company - the company name, a contact '
+        'person\'s name, phone number, email, and address. Like all the model classes, it '
+        'implements Serializable so the data survives application restarts. Supplier records '
+        'are linked to medicines through the supplierId field in Medicine.java.',
     'Bill.java':
-        'Model class representing a billing transaction. Contains overloaded applyDiscount() '
-        'methods demonstrating method overloading. Stores bill items, total amount, and date.',
+        'The billing model was one of the more interesting ones to design. It holds the full '
+        'details of a transaction: customer info, date, who billed it, and an ArrayList of '
+        'BillItem objects. The applyDiscount() method is overloaded twice - once that takes '
+        'a percentage and one that takes an amount plus a boolean flag indicating whether '
+        'it\'s a fixed amount or a percentage. That overloading was deliberate to cover the '
+        'polymorphism requirement.',
     'BillItem.java':
-        'Represents a single line item in a bill. Uses Integer for quantity and Double for '
-        'unitPrice and subtotal, demonstrating wrapper classes and autoboxing.',
+        'Each individual line in a bill is a BillItem. It stores the medicine name, quantity '
+        '(as Integer - wrapper class), unit price and subtotal (both Double - wrapper class). '
+        'The subtotal is calculated in the constructor itself so it\'s always consistent. '
+        'The autoboxing happens when we assign int/double literals to the Integer/Double fields.',
     'Prescription.java':
-        'Represents a medical prescription issued to a customer. Contains a list of '
-        'PrescriptionItem objects and links to the customer and prescribing doctor.',
+        'Represents a prescription that a doctor has issued for a patient. It links to a '
+        'customer via customerId and holds the doctor\'s name, date, and any notes. The list '
+        'of prescribed medicines is kept as an ArrayList<PrescriptionItem>. '
+        'Implements Serializable for persistence through DataStore.',
     'PrescriptionItem.java':
-        'Represents a single medicine entry within a prescription, including medicine name, '
-        'dosage, and quantity instructions.',
+        'Each line within a prescription is stored as a PrescriptionItem. It records which '
+        'medicine, how many, and the dosage instructions (like "1-0-1" meaning once in the '
+        'morning and once at night). Simple class but important for linking prescriptions '
+        'to actual inventory items.',
     'User.java':
-        'Represents a system user with username, password, fullName, and UserRole. Contains '
-        'an authenticate() method that validates login credentials.',
+        'Represents someone who can log in to the system. Has a username, password, full name, '
+        'and a UserRole enum. The authenticate() method checks whether a given password matches, '
+        'which keeps the credential-checking logic inside the model rather than scattered '
+        'across the login screen. Implements Serializable so user accounts persist.',
     'InventoryManager.java':
-        'Core service class managing the medicine inventory. Uses ArrayList for ordered storage '
-        'and HashMap for fast lookup. All write methods are synchronized for thread safety. '
-        'Uses Iterator for safe deletion, and Collections.sort() with both Comparable and '
-        'Comparator for flexible sorting.',
+        'Probably the most used service class in the whole project. It manages the full list '
+        'of medicines, stored in both an ArrayList (for ordered access) and a HashMap (for '
+        'instant lookup by ID). Every method that changes data is synchronized since the '
+        'expiry and stock alert threads also access this data in the background. Deletions '
+        'use an Iterator to avoid ConcurrentModificationException. Sorting uses '
+        'Collections.sort() in combination with compareTo() from the Comparable interface, '
+        'and we added a Comparator-based sort for price and expiry date as well.',
     'BillingService.java':
-        'Handles all billing operations: creating bills, adding items, calculating totals, '
-        'applying discounts, and generating invoice text files using FileWriter. All methods '
-        'are synchronized.',
+        'Takes care of everything billing-related: creating new bills, saving them, '
+        'calculating totals, and writing invoice files to disk. The invoice generation '
+        'uses FileWriter, which is one of the File I/O requirements. We had a bug early on '
+        'where the invoice used Unicode box-drawing characters that caused encoding errors '
+        'on Windows machines, so we switched to plain ASCII borders instead. All public '
+        'methods are synchronized.',
     'CustomerService.java':
-        'Provides CRUD operations for customer records using ArrayList and HashMap. Uses '
-        'Iterator for safe removal. Persists data using DataStore serialization.',
+        'Handles the full create, read, update, delete cycle for customer records. Under the '
+        'hood it keeps an ArrayList for iteration order and a HashMap for fast lookups by ID. '
+        'When deleting, it uses an Iterator rather than removing inside a for-each loop, '
+        'which would throw an exception. The DataStore<Customer> instance handles saving '
+        'everything to disk as a serialized file.',
     'SupplierService.java':
-        'Provides CRUD operations for supplier records using ArrayList and HashMap. Uses '
-        'Iterator for safe removal. Persists data using DataStore serialization.',
+        'Same structure as CustomerService but for supplier records. CRUD operations backed '
+        'by ArrayList + HashMap, Iterator used for deletion, and DataStore handles the '
+        'serialized file storage. Also has a searchByName() method that does a '
+        'case-insensitive substring search through the supplier list.',
     'PrescriptionService.java':
-        'Manages prescription records with full CRUD support. Uses ArrayList and HashMap, '
-        'Iterator for deletion, and DataStore for serialized persistence.',
+        'Manages prescription records. Add and delete operations are supported. The getByCustomerId() '
+        'method is useful when you want to pull up all prescriptions for a specific patient. '
+        'Like the other service classes, it delegates persistence entirely to DataStore<Prescription>.',
     'UserService.java':
-        'Handles user authentication and management. Creates default admin and pharmacist '
-        'accounts on first run. Validates credentials using User.authenticate().',
+        'Handles login validation and user management. On the very first run, when no users '
+        'exist yet, it automatically creates a default admin and a default pharmacist account. '
+        'The authenticate() method loops through the user list looking for a matching username '
+        'and then calls User.authenticate() to check the password, keeping the logic clean.',
     'ExpiryAlertThread.java':
-        'Background thread that monitors medicines approaching their expiry date. Extends the '
-        'Thread class directly, runs as a daemon thread, uses sleep(30000) to check every 30 '
-        'seconds, and uses wait()/notify() for synchronization.',
+        'One of two background monitoring threads. This one extends the Thread class directly '
+        '(the other uses Runnable, so we cover both approaches). It\'s marked as a daemon '
+        'thread so it stops automatically when the main application closes. Every 30 seconds '
+        'it wakes up via sleep(), checks the inventory for expired and about-to-expire medicines, '
+        'and uses wait()/notify() so other threads can safely read the results.',
     'StockAlertThread.java':
-        'Background thread that monitors low stock levels. Implements the Runnable interface '
-        '(second threading approach). Uses a volatile boolean flag for graceful shutdown and '
-        'a synchronized checkStock() method.',
+        'The second monitoring thread, this time implementing Runnable rather than extending '
+        'Thread directly. It checks for medicines with fewer than 10 units in stock and '
+        'notifies a listener if any are found. A volatile boolean flag named "running" is '
+        'used to stop the thread cleanly without calling interrupt() or using deprecated '
+        'Thread.stop(). The checkStock() method is synchronized.',
     'BillingThread.java':
-        'Processes billing operations asynchronously. Extends Thread and uses sleep() and '
-        'join(). Defines a BillingCallback inner interface for returning results to the UI '
-        'thread via Platform.runLater().',
+        'When a bill is ready to be processed, instead of doing everything on the JavaFX '
+        'application thread (which would freeze the UI), we hand it off to a BillingThread. '
+        'It extends Thread, sleeps for a bit to simulate processing time, then calls '
+        'BillingService.createBill() inside a synchronized block. A BillingCallback interface '
+        'is used to pass the result back to the UI. The UI then uses Platform.runLater() to '
+        'update labels and tables safely. We also demonstrated join() by having a separate '
+        'watcher thread wait for BillingThread to finish.',
     'BackupService.java':
-        'Implements Runnable to perform periodic data backups. Calls DataStore.backupToText() '
-        'for all five service classes to write human-readable backup files.',
+        'Implements Runnable so it can be passed to any Thread or ExecutorService. When run, '
+        'it calls createBackup() on each of the five service classes in sequence, with short '
+        'sleep() calls between each one. This writes human-readable text copies of all the '
+        'data into the data/ directory. A BackupCallback interface lets the UI show a '
+        'completion message once the backup is done.',
     'PharmacyApp.java':
-        'Main JavaFX Application entry point. Extends Application and overrides start(). '
-        'Initializes all service objects, starts background threads, loads sample data on '
-        'first run, and manages screen navigation using Stage.setScene().',
+        'This is where the application starts. It extends JavaFX\'s Application class and '
+        'the start() method sets everything up: all service objects are created, the expiry '
+        'and stock alert threads are started, sample data is loaded on the first run, and '
+        'the login screen is shown. Navigation between screens is handled through a '
+        'showXxxScreen() pattern where each call to one of these methods creates a new scene '
+        'and passes it to Stage.setScene().',
     'LoginScreen.java':
-        'Login interface built with GridPane. Uses PasswordField to mask passwords and '
-        'validates credentials via UserService. Supports Admin and Pharmacist roles and '
-        'redirects to the Dashboard on successful login.',
+        'The first thing users see when they open the app. Built with a GridPane layout, '
+        'PasswordField to keep the password hidden, and a Label that shows a red error '
+        'message if login fails. After successful authentication through UserService, '
+        'the user gets redirected to the dashboard. The role (Admin or Pharmacist) is '
+        'stored in the User object that comes back from authentication.',
     'DashboardScreen.java':
-        'Main dashboard displayed after login. Uses BorderPane with an HBox top bar and a '
-        'GridPane of six navigation buttons. Displays the logged-in user\'s name and role, '
-        'and provides a Logout button.',
+        'After logging in, this is the home screen. It uses a BorderPane as the root, '
+        'with a dark-colored HBox at the top showing the app name and the logged-in '
+        'user\'s details. The center has a GridPane with six buttons, each leading to '
+        'a different module. There\'s also a Logout button that returns to the login screen '
+        'and clears the current user from UserService.',
     'InventoryScreen.java':
-        'Full inventory management screen with a TableView showing all medicines. Provides '
-        'Add, Edit, Delete, Search by name, and Filter by category using a ComboBox. Supports '
-        'sorting by clicking column headers.',
+        'The most feature-rich screen in the system. Shows all medicines in a TableView. '
+        'On the left side there\'s a form for adding and editing medicines, with a ComboBox '
+        'for selecting the medicine category (populated from the MedicineCategory enum). '
+        'There\'s a search box, a sort dropdown, and a category filter at the top of the '
+        'table. Clicking a row auto-fills the form fields for editing.',
     'BillingScreen.java':
-        'Billing and sales screen. Allows staff to select a customer, add medicine items to '
-        'a bill, apply discounts, and process payment. Uses BillingThread for async processing '
-        'and Platform.runLater() to safely update the UI.',
+        'The billing screen is split into two sections. On the left you build the bill: '
+        'enter a customer ID (auto-fills the name), add medicines by ID and quantity, '
+        'optionally apply a discount percentage, then hit Generate Bill. The processing '
+        'runs in a BillingThread so the UI stays responsive. On the right, current bill '
+        'items are shown in one table and past bills in another.',
     'SupplierScreen.java':
-        'Supplier management screen with a TableView and full CRUD operations. Allows adding, '
-        'editing, and deleting supplier records with input validation.',
+        'Standard CRUD screen for supplier records. Table on the right shows all suppliers, '
+        'clicking a row populates the form on the left for editing. Add, Update, Delete, '
+        'and Clear buttons. Search by company name filters the table in real time. '
+        'Supplier IDs are auto-generated by IDGenerator.',
     'CustomerScreen.java':
-        'Customer records screen with a TableView and full CRUD operations. Allows adding, '
-        'editing, and deleting customer records with input validation.',
+        'Same layout pattern as SupplierScreen but for customer/patient records. The '
+        'search function does a case-insensitive name search through CustomerService. '
+        'Customer IDs follow the CUS-xxxx format from IDGenerator. '
+        'Selected table rows populate the form automatically.',
     'PrescriptionScreen.java':
-        'Prescription handling screen. Displays prescriptions in a ListView and shows details '
-        'in a TextArea. Allows creating new prescriptions with medicine items.',
+        'Slightly more complex than the other CRUD screens because a prescription has nested '
+        'items. You fill in the patient and doctor details, then add medicines one by one '
+        'into a ListView showing the current list. Once you save, the full prescription '
+        '(with all items) goes into PrescriptionService. Selecting a saved prescription '
+        'shows its complete details in a TextArea below the main table.',
     'ReportsScreen.java':
-        'Reports and backup screen. Shows summary statistics (medicine count, customer count, '
-        'bill count) as cards. Provides a Backup button that triggers BackupService in a new '
-        'Thread. Also shows low stock and expiry alerts.',
+        'The reports screen has a menu on the left side with buttons for different report '
+        'types. The default view is a summary dashboard showing coloured cards with counts '
+        'for medicines, customers, bills, and total sales. Other views show the full sales '
+        'report, stock levels, expiry alerts (pulled from the running ExpiryAlertThread), '
+        'and low stock items. The backup button runs BackupService in a new thread and '
+        'shows a progress indicator while it runs.',
     'DataStore.java':
-        'Generic utility class DataStore<T extends Serializable> that handles all persistence. '
-        'saveAll() serializes an ArrayList using ObjectOutputStream + FileOutputStream. '
-        'loadAll() deserializes using ObjectInputStream + FileInputStream. backupToText() '
-        'writes readable text using FileWriter. readBackup() reads with FileReader. All methods '
-        'are synchronized.',
+        'This is the generic persistence class that all five service classes use. It\'s '
+        'declared as DataStore<T extends Serializable>, so it works with any model class '
+        'that implements Serializable. saveAll() takes an ArrayList and writes it to a '
+        '.dat file using ObjectOutputStream wrapped around FileOutputStream. loadAll() '
+        'reads it back with ObjectInputStream and FileInputStream. backupToText() writes '
+        'a readable version using FileWriter. All methods are synchronized to handle '
+        'concurrent access from background threads.',
     'IDGenerator.java':
-        'Utility class with synchronized static methods for generating unique IDs. Generates '
-        'IDs in the format MED-001, CUS-001, SUP-001, BIL-001, PRE-001 using an internal '
-        'counter for each type.',
+        'A small but important utility class. It keeps static integer counters for each '
+        'type of record and generates IDs like MED1001, CUS2001, SUP3001 etc. Every '
+        'generation method is synchronized so that even if two threads try to get an ID '
+        'at the same time, they\'ll always get different values. There\'s also an '
+        'updateCounters() method that gets called on startup to continue from where the '
+        'last saved data left off.',
     'SampleDataLoader.java':
-        'Utility class that loads sample data on the first run of the application. Adds 10 '
-        'medicines, 3 customers, and 3 suppliers so the system has data to demonstrate.',
+        'On the very first run, before any real data exists, this class populates the '
+        'system with 10 sample medicines (covering all the enum categories), 3 sample '
+        'customers, and 3 sample suppliers. It checks whether medicines already exist '
+        'before loading anything so it never doubles up on runs after the first.',
 }
 
 # ── DETAILED EXPLANATION OF EACH FILE ─────────────────────────────────────
@@ -468,26 +578,29 @@ story.append(PageBreak())
 story.append(sec_hdr('Conclusion'))
 story += [sp(6)]
 story.append(body(
-    'The Pharmacy Management System (PMS) provides an efficient and reliable platform for '
-    'pharmacy staff to manage medicine inventory, process billing transactions, maintain '
-    'customer and supplier records, handle prescriptions, and generate automated alerts for '
-    'expiring or low-stock medicines. Using Java and JavaFX, the system delivers a clean, '
-    'intuitive graphical interface that makes it easy for both administrators and pharmacists '
-    'to interact with their data securely and accurately.'
+    'By the end of this project we had a fully working pharmacy application that we could '
+    'actually demonstrate with real data. Looking back, the part that took the most thought '
+    'wasn\'t the UI or even the threading - it was getting the class structure right. '
+    'Once the model and service layers were cleanly separated, everything else fell into '
+    'place a lot more naturally. Adding a new feature meant touching one service class and '
+    'one screen, not rewriting things all over the codebase.'
 ))
 story.append(body(
-    'By integrating role-based access control, unique auto-generated IDs for each record, '
-    'and synchronized thread-safe service methods, the PMS ensures that data integrity is '
-    'preserved even under concurrent access conditions. The use of background threads for '
-    'expiry and stock monitoring, combined with automatic invoice generation using FileWriter, '
-    'makes the system both proactive and practical for day-to-day pharmacy operations.'
+    'The threading part was genuinely useful to implement. Running expiry and stock checks '
+    'in the background means the user never has to manually refresh anything - the system '
+    'just tells them when something needs attention. Using BillingThread for invoice '
+    'processing also showed us why Platform.runLater() matters: without it, UI updates '
+    'from a background thread would just silently fail or cause exceptions.'
 ))
 story.append(body(
-    'Overall, the PMS successfully demonstrates how object-oriented programming principles '
-    '- Encapsulation, Inheritance, Polymorphism, and Abstraction - along with Java Collections, '
-    'Generics, Multithreading, File Handling, and Serialization can be applied to solve '
-    'real-world problems in healthcare management, resulting in a secure, modular, and '
-    'scalable solution.'
+    'On the academic side, this project ended up covering every OOP concept from the syllabus '
+    'and then some. Encapsulation is in every model class. Inheritance shows up in the '
+    'Thread subclasses and the Application extension. Polymorphism comes through with '
+    'overloaded methods in Bill.java and the callback interfaces used in the threading '
+    'classes. Abstraction is in those same interfaces. Generics in DataStore<T>. '
+    'Collections, Serialization, File I/O, Enums, Wrapper classes - they\'re all '
+    'genuinely used, not just added as decorations. That made the code feel like a real '
+    'project rather than just a lab exercise.'
 ))
 
 # ── INDIVIDUAL CONTRIBUTIONS ───────────────────────────────────────────────
@@ -521,13 +634,13 @@ for name, files in contribs:
 
 story += [sp(8)]
 story.append(body(
-    'While project tasks were divided among the team members, we collaborated closely at every '
-    'stage, discussing and refining our design decisions together. Since this system strictly '
-    'follows Object-Oriented Programming principles, each file is interdependent, requiring '
-    'continuous communication and coordination to ensure seamless integration across all classes '
-    'and modules. By regularly reviewing each other\'s work and resolving challenges '
-    'collaboratively, we maintained consistency in design and functionality, resulting in a '
-    'unified and robust Pharmacy Management System.'
+    'We split the work based on what each person was comfortable with, but we all ended up '
+    'reviewing and testing each other\'s code anyway. OOP projects are inherently '
+    'interconnected - Kenneth\'s login screen needed Sam\'s Medicine class to exist, '
+    'Rayyan\'s billing needed Vedank\'s DataStore to work. So even though we had clear '
+    'ownership of different parts, we were constantly in each other\'s code fixing import '
+    'paths, adjusting method signatures, and debugging integration issues together. '
+    'That back-and-forth is actually what made the final result consistent.'
 ))
 
 # ── REFERENCES ─────────────────────────────────────────────────────────────
