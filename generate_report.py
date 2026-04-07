@@ -180,31 +180,34 @@ story.append(PageBreak())
 story.append(sec_hdr('Introduction'))
 story += [sp(6)]
 story.append(body(
-    'Running a pharmacy involves far more record-keeping than most people realise. Every tablet '
-    'sold, every prescription received, every new batch delivered from a supplier - all of it '
-    'needs to be logged somewhere. When that somewhere is a paper notebook, things go wrong '
-    'quickly. A medicine gets billed at the wrong price. Someone sells a batch that expired '
-    'two weeks ago. A customer\'s prescription history disappears when the register gets full '
-    'and a new one is started. These are not theoretical scenarios - they happen regularly in '
-    'pharmacies that have not moved away from manual record keeping.'
+    'When we started looking for a project idea, one of our team members mentioned his uncle '
+    'owns a small pharmacy near his house. The pharmacy still runs on paper - a thick register '
+    'for stock entries, handwritten bills, prescriptions tucked into folders. He said the '
+    'staff spends at least an hour every day just searching through records. That gave us the '
+    'idea. A pharmacy is actually a perfect use case for everything we were learning in our '
+    'OOP lab - it has multiple types of data, multiple users with different access levels, '
+    'operations that need to happen in the background, and files that need to be saved and '
+    'loaded between sessions.'
 ))
 story.append(body(
-    'Our group chose to build a desktop application for pharmacy management as our semester '
-    'project. The application runs on Java with a visual front end built using JavaFX. '
-    'A staff member can look up any medicine in seconds, raise an invoice with automatic '
-    'calculations, store patient prescriptions digitally, and see a live warning the moment '
-    'any medicine drops below the minimum stock level or approaches its expiry date. '
-    'Two separate background processes keep watch over stock and expiry round the clock, '
-    'completely independent of whatever the staff member is doing on screen at the time.'
+    'So we built a desktop application for pharmacy management using Java and JavaFX. '
+    'The system handles six main areas: medicine inventory, billing and invoices, customer '
+    'records, supplier information, prescriptions, and a reports section. Staff can search '
+    'for any medicine instantly, build a bill by adding items one by one with automatic '
+    'price calculation, and save prescription records linked to specific patients. '
+    'Two monitoring threads run in the background the entire time the application is open - '
+    'one checks for medicines running low on stock, the other watches expiry dates - '
+    'so the staff get warnings without having to check anything manually.'
 ))
 story.append(body(
-    'The project gave us a concrete reason to use OOP properly rather than just reading '
-    'about it. Every concept from the syllabus ended up appearing naturally - private fields '
-    'with controlled access, classes that share behaviour through parent classes, the same '
-    'method name behaving differently depending on the arguments passed, shared behaviour '
-    'defined through interfaces, type-independent data storage through generics, and '
-    'background workers through threads. Nothing felt forced. The structure of a real '
-    'pharmacy application just happens to need all of these things.'
+    'From a learning perspective, this project made OOP concepts feel real rather than '
+    'textbook exercises. We needed encapsulation to protect medicine and billing data '
+    'from being changed accidentally. We needed inheritance when building threads and the '
+    'main application class. We needed method overloading in the billing logic where '
+    'discount can be applied as either a percentage or a flat amount. Interfaces gave us '
+    'a clean way to pass results back from background threads to the UI. Generics let us '
+    'write a single file-storage class that works for medicines, customers, suppliers, '
+    'bills, and prescriptions without duplicating any code. Every concept earned its place.'
 ))
 
 # ── PROBLEM STATEMENT ──────────────────────────────────────────────────────
@@ -213,48 +216,54 @@ story.append(sec_hdr('Problem Statement'))
 story += [sp(6)]
 story.append(sub_hdr('Pharmacy Management System with Inventory Control and Billing Automation'))
 story.append(body(
-    'A typical neighbourhood pharmacy juggles stock from dozens of suppliers, serves hundreds '
-    'of patients, and processes prescriptions from multiple doctors - all in a single working '
-    'day. Without a proper system, the staff end up spending more time searching for information '
-    'than actually serving customers. A patient asks whether a particular antibiotic is '
-    'available and the pharmacist has to flip through pages of a register to find out. '
-    'An invoice gets calculated by hand and the arithmetic is off. A box of injections sits '
-    'on the shelf a month past its expiry date because nobody checked.'
+    'The core problem with paper-based pharmacy management is not just that it is slow. '
+    'It is that mistakes are invisible until they cause damage. A billing error in a '
+    'handwritten invoice is discovered only when the patient questions it. An expired '
+    'medicine batch is noticed only when someone picks it up to dispense it. A stock '
+    'shortage is caught only when the shelf is empty and a customer is waiting. '
+    'None of these are acceptable situations in a healthcare setting, yet they are '
+    'a daily reality for pharmacies that have not upgraded their systems.'
 ))
 story.append(body(
-    'The problem is not a lack of effort - it\'s a lack of the right tools. Our project '
-    'addresses this directly. We designed the system around four core needs: knowing exactly '
-    'what is in stock at all times, generating accurate bills without manual calculations, '
-    'maintaining a searchable record of every patient and prescription, and receiving automatic '
-    'alerts when something needs attention. Two background threads run continuously - one '
-    'watching for medicines whose stock has dropped too low, and another checking expiry '
-    'dates on a schedule - so the staff are warned before a problem becomes a crisis, '
-    'not after.'
+    'Our system targets these three failure points directly. Every invoice is calculated '
+    'by the software, so arithmetic errors are not possible. Expiry dates are monitored '
+    'continuously by a background thread that flags anything expiring within thirty days, '
+    'giving staff time to act before the medicine becomes unusable. Stock levels trigger '
+    'a separate alert the moment any item drops below ten units. Beyond these alerts, '
+    'the system also stores prescription history per patient, tracks which supplier '
+    'provided which batch, and generates text-format invoice files that can be printed '
+    'or archived. The whole application is designed to run on a standard pharmacy counter '
+    'PC with no internet connection required.'
 ))
 
 # ── IMPLEMENTATION DETAILS ─────────────────────────────────────────────────
 story.append(sec_hdr('Implementation Details'))
 story += [sp(6)]
 story.append(body(
-    'The project is written entirely in Java. For the visual side we chose JavaFX, which '
-    'gave us proper desktop-grade UI components - tables, forms, dropdowns, and layout '
-    'containers - without needing a web stack. The source code is spread across 32 files '
-    'grouped under four packages. The model package is purely data - each class there '
-    'describes one kind of record the system deals with. The service package contains all '
-    'the processing logic, completely separated from any visual code. The ui package has '
-    'one file per screen. The util package holds anything shared across the rest of the '
-    'code, like the file storage engine and the ID numbering system.'
+    'The entire codebase is in Java, with JavaFX handling the visual interface. '
+    'We picked JavaFX because it gives proper desktop UI components out of the box - '
+    'tables that sort when you click a column header, form layouts that align fields '
+    'neatly, styled buttons, dropdown selectors - all without needing a browser or '
+    'a web framework. The 32 source files are split into four packages based on what '
+    'they do rather than how they look. Model classes are just data containers. '
+    'Service classes hold all the logic and have no knowledge of the interface. '
+    'UI classes build and display screens. Utility classes provide shared tools '
+    'like ID generation and file storage that every other package depends on.'
 ))
 story.append(body(
-    'Keeping the service and UI layers separate was a deliberate choice we made after '
-    'an early draft where a screen class was also doing database operations - it became '
-    'unreadable fast. Once we separated them, each class had one clear job. The service '
-    'classes don\'t know anything about buttons or text fields. The screens don\'t know '
-    'anything about files or serialization. And because multiple threads run in the '
-    'background accessing the same data, every method in the service layer that writes '
-    'anything carries a lock to prevent two threads from colliding.'
+    'We initially wrote the inventory screen so that it handled its own data loading '
+    'and saving. It quickly became a 600-line class that was difficult to follow. '
+    'Splitting the data operations out into a separate service class cut the screen '
+    'file in half and made both halves individually readable. That experience shaped '
+    'how we structured the rest of the project. Every screen does only three things: '
+    'build the layout, react to user input, and call the right service method. '
+    'The service layer does the actual work. Since background threads are also '
+    'reading and writing the same data that the service classes manage, '
+    'every write operation inside those classes is locked - only one thread '
+    'can execute it at a time, which prevents data from getting corrupted '
+    'when two operations overlap.'
 ))
-story.append(body('All 32 source files included in this project:'))
+story.append(body('All 32 source files in this project:'))
 
 all_files = [
     # model
@@ -303,222 +312,266 @@ story += [sp(8)]
 # ── FILE DESCRIPTIONS ──────────────────────────────────────────────────────
 file_descriptions = {
     'Medicine.java':
-        'This class describes a single medicine entry - everything worth knowing about one '
-        'product sitting on the pharmacy shelf. The quantity field is typed as Integer rather '
-        'than the primitive int, and price uses Double rather than double. This was intentional '
-        'to show how Java automatically wraps and unwraps primitive values when assigning '
-        'between the two forms. The class has two versions of the constructor: one that '
-        'includes a supplier reference and one that leaves it out, demonstrating how '
-        'constructors can be overloaded. A compareTo method was added so that when a list '
-        'of medicines gets sorted, the natural ordering is alphabetical by name.',
+        'Medicine.java is the data class for a single stock item. Each medicine object '
+        'stores its ID, name, manufacturer, category, batch number, expiry date, quantity, '
+        'price, and supplier ID. We deliberately declared quantity as Integer (capital I) '
+        'and price as Double (capital D) rather than using the primitive forms int and double. '
+        'The reason was to have autoboxing and unboxing visible in the code - whenever we '
+        'assign a plain number to those fields, Java silently wraps it into an object, and '
+        'when we use it in a calculation, it unwraps it back. The class has two constructors: '
+        'one that takes all nine fields including the supplier ID, and another shorter one '
+        'that leaves the supplier ID out for cases where it is not known yet. That is '
+        'constructor overloading. There is also a compareTo method which makes it possible '
+        'to sort a list of medicines alphabetically by name without writing any extra '
+        'comparison logic at the call site.',
     'MedicineCategory.java':
-        'Rather than letting someone type "tablet" in one place and "Tablet" in another and '
-        'have the system treat them as different things, we locked the allowed categories '
-        'into an enum. The eight values cover the full range of what a typical pharmacy '
-        'stocks: tablets, capsules, syrups, injections, ointments, drops, inhalers, and '
-        'powders. Every category carries a display name alongside it so the UI can show '
-        'something readable without any extra conversion step.',
+        'This is an enum with eight values: TABLET, CAPSULE, SYRUP, INJECTION, OINTMENT, '
+        'DROPS, INHALER, and POWDER. Before we introduced this, category was stored as a '
+        'plain String, which caused problems - one part of the code would write "Tablet" '
+        'and another would write "tablet" and they would not match. An enum fixes that '
+        'completely because there is only one possible value and Java enforces it at '
+        'compile time. Each enum value also carries a human-readable display name so '
+        'the UI can show "Tablet" instead of "TABLET" without any extra formatting code.',
     'UserRole.java':
-        'Two roles exist in the system - one for administrators who need access to '
-        'everything, and one for pharmacists whose access is more restricted. We put both '
-        'in an enum rather than comparing strings at login time. Each role carries a boolean '
-        'flag that answers whether that role is permitted to manage other user accounts. '
-        'Checking permission anywhere in the app is then just a matter of calling that flag.',
+        'The system supports two account types: ADMIN for full access and PHARMACIST '
+        'for a restricted view. Both are defined in this enum. Each value carries a '
+        'boolean field that says whether that role is allowed to manage user accounts. '
+        'Using an enum here instead of a String or integer constant means the compiler '
+        'will catch any typo in a role check at build time rather than at runtime.',
     'Customer.java':
-        'Five pieces of information describe a customer in this system: an ID we generate, '
-        'their full name, phone number, email address, and physical address. The class is '
-        'tagged so Java\'s built-in object serialisation can write it to disk and read it '
-        'back on the next launch. The toString method produces a short summary string '
-        'that shows up in dropdowns and log outputs.',
+        'Stores five details for each patient: a system-generated ID, their name, '
+        'phone number, email, and address. The class is marked as serialisable, which '
+        'is the flag Java needs to be able to write the object to a file and read it '
+        'back correctly on the next startup. A toString method returns a compact one-line '
+        'summary that is used in tables and status messages.',
     'Supplier.java':
-        'A supplier record tracks the company that delivers medicines to the pharmacy. '
-        'Beyond the company name we also store a specific contact person\'s name, their '
-        'phone and email, and the company address. Each medicine in the inventory can '
-        'carry a supplier ID pointing back to whichever supplier provided that batch. '
-        'Like all the model classes, this one is serialisable so it persists across sessions.',
+        'A supplier entry covers the company name, a specific contact person at that '
+        'company, their phone and email, and the company address. Medicines in the '
+        'inventory link back to a supplier through a supplier ID stored in the medicine '
+        'record itself, so you can trace any batch back to where it came from. '
+        'Serialisable like all the other model classes.',
     'Bill.java':
-        'A bill is more than just a total - it records who bought what, when, and who '
-        'at the pharmacy processed the sale. The list of individual items is stored inside '
-        'the bill object itself. The discount logic was written as two separate methods '
-        'sharing the same name: one accepts a percentage, the other accepts an amount and '
-        'a flag that says whether to treat it as fixed or percentage. This is the clearest '
-        'example of method overloading in the project.',
+        'A complete billing record contains the customer details, the transaction date, '
+        'the username of whoever processed the bill, and a list of all the line items. '
+        'The discount feature is written using method overloading - there are two methods '
+        'both named applyDiscount, but they take different parameters. One takes just a '
+        'percentage value. The other takes an amount and a boolean flag: if the flag is '
+        'true, the amount is treated as a fixed rupee deduction; if false, it is treated '
+        'as a percentage. This is one of the clearer demonstrations of polymorphism in '
+        'the project.',
     'BillItem.java':
-        'One row on a receipt maps to one BillItem object. It knows the medicine name, '
-        'how many units were sold, the price per unit, and the line total. The numeric '
-        'fields are all object types rather than primitives - Integer for the count and '
-        'Double for the money values - so that autoboxing and unboxing are visibly '
-        'happening when we assign plain numbers to them in the constructor.',
+        'One line in a bill - one medicine, its quantity, unit price, and calculated '
+        'subtotal. The quantity is stored as Integer and the prices as Double, both '
+        'capital-letter object types rather than lowercase primitives. The constructor '
+        'takes plain int and double values as parameters and assigns them to these fields, '
+        'which is where autoboxing happens: Java wraps the primitive into the object form '
+        'automatically without us having to call any conversion method.',
     'Prescription.java':
-        'A doctor writes a prescription for a specific patient. This class captures that '
-        'relationship: it stores which patient the prescription belongs to, the name of '
-        'the prescribing doctor, the date, any special notes, and a collection of the '
-        'individual medicines prescribed. The medicine list grows one entry at a time '
-        'as items are added through the addItem method.',
+        'A prescription belongs to a specific patient and was written by a specific doctor '
+        'on a specific date. This class holds all of that, plus any notes (dosage '
+        'instructions, special warnings), and a list of PrescriptionItem objects - one '
+        'for each medicine the doctor prescribed. The addItem method grows that list one '
+        'entry at a time as items are added in the prescription screen.',
     'PrescriptionItem.java':
-        'Each medicine that appears in a prescription is stored as its own object. '
-        'Beyond the medicine name and quantity, it also stores the dosage string - '
-        'something like "1 tablet morning and night" - which is specific to that '
-        'prescription and cannot come from the general inventory record.',
+        'Each medicine in a prescription is its own PrescriptionItem. It records the '
+        'medicine name, how many units were prescribed, and a dosage instruction string '
+        'like "twice daily after meals". The dosage text is entered by the staff member '
+        'at the time of creating the prescription - it is not pulled from the inventory '
+        'because dosage instructions vary by patient even for the same medicine.',
     'User.java':
-        'Staff members who can log into the system are stored as User objects. The '
-        'class holds a login name, a password, the person\'s full name, and their role. '
-        'Password checking is handled by a method inside this class rather than in the '
-        'login screen, so the credential comparison logic stays in one place. '
-        'User objects are serialisable so accounts survive application restarts.',
+        'Login accounts for pharmacy staff. Each User object stores a username, a '
+        'password, the person\'s full name, and their role as a UserRole enum value. '
+        'The authenticate method inside the class accepts a password string and returns '
+        'true or false depending on whether it matches. We put that check inside the '
+        'model class deliberately so the login screen does not need to know anything '
+        'about how passwords are compared - it just calls the method and acts on the result.',
     'InventoryManager.java':
-        'This service class is the backbone of the stock management side. It keeps the '
-        'medicine data in two parallel structures at once: an ordered list for things like '
-        'displaying all medicines in sequence, and a lookup table keyed by medicine ID '
-        'for instant retrieval when you know what you\'re looking for. Because two background '
-        'threads are also reading this data at runtime, every write operation is locked so '
-        'only one thread can change anything at a time. Removing medicines while iterating '
-        'is done through a traversal object that handles removal safely rather than '
-        'modifying the list mid-loop. Sorting supports three modes: alphabetical by name '
-        'using the natural ordering defined in Medicine.java, by price, and by expiry date.',
+        'This is the most heavily used service class in the whole project. '
+        'It holds all medicines in two data structures at once. There is a list, which '
+        'keeps medicines in the order they were added and can be iterated for display. '
+        'There is also a map keyed by medicine ID, which gives you any specific medicine '
+        'in constant time without scanning through the whole list. Both are kept in sync '
+        'on every add, update, and delete. Deletion is done using Java\'s iterator cursor '
+        'rather than removing inside a regular loop, because removing from a list while '
+        'iterating it normally throws an error. Since the expiry alert thread and the stock '
+        'alert thread both read inventory data while the user might be adding or editing, '
+        'every write method is locked - only one caller can run it at a time. Sorting '
+        'is available in three ways: by name using the compareTo method in Medicine.java, '
+        'by price using a custom comparator, and by expiry date using another comparator.',
     'BillingService.java':
-        'This class sits between the billing screen and the data layer. When a bill comes '
-        'in, it checks that sufficient stock exists for every item, deducts the quantities, '
-        'saves the bill record, and writes a plain-text invoice file to disk. The invoice '
-        'writing is done through a character stream writer pointed at a .txt file. '
-        'Early in development this code used graphical border characters that only render '
-        'correctly in UTF-8 but caused garbled output on Windows systems using a different '
-        'default encoding, so those were replaced with plain dashes and pipes.',
+        'All billing operations go through here. When a bill is submitted, this class '
+        'checks each item against current stock levels, rejects the whole transaction if '
+        'anything is short, otherwise deducts all quantities and saves the bill. It also '
+        'writes a plain-text invoice to a .txt file using a character-based file writer. '
+        'We hit a problem during testing where the invoice used line-drawing characters '
+        'that displayed correctly on our machines but came out as garbled symbols on '
+        'Windows computers set to a different text encoding. We fixed it by switching '
+        'to plain dashes and vertical bars instead, which encode the same in everything.',
     'CustomerService.java':
-        'Adding, updating, searching, and removing customer records all live here. '
-        'The data sits in two structures simultaneously - a list that preserves insertion '
-        'order and a map that gives instant access by customer ID. Removal uses a traversal '
-        'cursor rather than index-based deletion, which avoids a structural modification '
-        'error that Java throws if you delete from a collection while directly looping it. '
-        'All changes are pushed to disk immediately through the generic storage class.',
+        'Manages patient records: add, update, delete, search, and fetch by ID. '
+        'The storage structure is a list and a map in parallel, same as InventoryManager. '
+        'The list is used when displaying all customers in a table. The map is used when '
+        'the billing screen or prescription screen needs a specific customer by their ID '
+        'without scanning the whole list. The search method does a case-insensitive '
+        'name match, returning every customer whose name contains the search text anywhere '
+        'within it. Every change is written to disk immediately after it happens.',
     'SupplierService.java':
-        'Structured identically to the customer service but operating on supplier records '
-        'instead. The same dual-storage pattern applies: list plus map. The search feature '
-        'here matches against company name rather than a person\'s name, using a '
-        'case-folded substring comparison so partial matches work regardless of how '
-        'the user types the name.',
+        'Handles supplier records with the same structure as CustomerService. List plus '
+        'map, iterator-based deletion, immediate persistence after each change. '
+        'The only difference is that search runs against the company name field rather '
+        'than a person\'s name. This class is also called by the backup service, which '
+        'asks it to write a readable text copy of all supplier data to a separate file.',
     'PrescriptionService.java':
-        'Prescription records are added, retrieved, and deleted through this class. '
-        'The lookup-by-patient method is particularly useful in the UI - when a staff '
-        'member pulls up a customer\'s profile, all their past prescriptions can be '
-        'fetched with a single call. Storage and retrieval from disk is entirely '
-        'delegated to the generic DataStore class.',
+        'Prescriptions can be added, deleted, and retrieved here. One method worth '
+        'mentioning is getByCustomerId, which returns all prescriptions belonging to a '
+        'specific patient. The prescription screen uses this when a staff member selects '
+        'a patient to see their prescription history. The persistence mechanism is '
+        'identical to the other service classes - a DataStore instance handles reading '
+        'and writing the serialised file.',
     'UserService.java':
-        'The first time the application launches with no saved user data, this class '
-        'quietly creates two default accounts so there is always something to log in with. '
-        'When a login attempt comes in, it walks the user list looking for a name match '
-        'and then asks the User object itself to verify the password - so the password '
-        'comparison logic is not spread across multiple files.',
+        'This class handles login and user account management. On first run, when the '
+        'data folder has no user file yet, it creates two default accounts: one admin '
+        'and one pharmacist. The login process searches the user list for a matching '
+        'username, then calls the authenticate method on the User object to check the '
+        'password. We made that check a method on User rather than in this service class '
+        'so the password comparison logic is in exactly one place and is not duplicated '
+        'if we add a password-change feature later.',
     'ExpiryAlertThread.java':
-        'This is one of two background workers in the system and it uses direct class '
-        'extension rather than the interface approach. It is flagged as a daemon so the '
-        'JVM does not wait for it to finish before shutting down. After pausing for thirty '
-        'seconds it wakes up and asks the inventory manager for two lists: medicines '
-        'already past their date, and medicines within thirty days of expiring. '
-        'A wait/notify pair lets other threads block on this one and receive the results '
-        'safely once they are ready.',
+        'The expiry monitor runs as a background thread by directly extending the Thread '
+        'class. It is configured as a daemon thread, which means the JVM will shut it '
+        'down automatically when the application closes without needing any manual stop '
+        'call. The run loop sleeps for thirty seconds, then wakes up and asks the '
+        'inventory manager for two lists: medicines already past their expiry date and '
+        'medicines expiring within the next thirty days. A wait/notify mechanism is used '
+        'so that any external code that wants to read those lists can safely wait until '
+        'the thread has finished its current check before accessing the results.',
     'StockAlertThread.java':
-        'The second background worker, written using the interface-based threading '
-        'approach rather than subclassing. A volatile flag controls whether the loop '
-        'keeps running - marking it volatile ensures the main thread\'s update to that '
-        'flag is visible to this thread immediately without caching issues. '
-        'The stock check itself is wrapped in a lock so that if both this thread and '
-        'the inventory screen try to read inventory data at the same moment, they queue '
-        'rather than collide.',
+        'The stock monitor uses the Runnable interface rather than extending Thread '
+        'directly. This was deliberate - we wanted to show both approaches in the same '
+        'project since the syllabus covers both. The thread runs a loop that pauses for '
+        'thirty seconds at a time, then calls the inventory manager for a list of any '
+        'medicines below ten units. A volatile boolean controls whether the loop '
+        'continues. It is volatile specifically so that when the main thread sets it '
+        'to false to stop the worker, the worker thread sees the change immediately '
+        'rather than reading a cached copy of the old value.',
     'BillingThread.java':
-        'Processing a bill - checking stock, writing the invoice file, saving the record - '
-        'takes a noticeable amount of time if done on the same thread as the UI. '
-        'Doing so would freeze the interface while the user waits. This class moves that '
-        'work onto a separate thread. When finished, it needs to update labels on screen, '
-        'but UI elements can only be touched from the main thread, so the result is handed '
-        'back through a scheduled task that runs on the correct thread. A join call in a '
-        'separate watcher thread demonstrates how one thread can pause until another '
-        'has fully completed.',
+        'When the cashier clicks "Generate Bill", the actual processing - stock checks, '
+        'quantity deduction, file writing, record saving - runs here rather than on the '
+        'main application thread. Running it on the main thread would freeze the entire '
+        'interface for a second or two. This thread does the work, then needs to update '
+        'status labels in the UI when done. UI updates must happen on the JavaFX main '
+        'thread, so the result is passed to a scheduling method that queues the update '
+        'to run on the correct thread as soon as it is available. Separately, a small '
+        'watcher thread calls join on this billing thread, which demonstrates how one '
+        'thread can pause and wait for another to complete before continuing.',
     'BackupService.java':
-        'Written as a task rather than a thread subclass, this class can be handed to '
-        'any thread the caller creates. When it runs, it goes through each of the five '
-        'service classes one by one and asks each to write a plain-text copy of its data '
-        'to the backup folder, with brief pauses between each one. A callback interface '
-        'lets the caller know when everything is done so the UI can show a confirmation.',
+        'This class implements the Runnable interface and is designed to be passed to '
+        'whichever Thread the caller creates for it. When it executes, it calls the '
+        'backup method on each of the five service classes in order - inventory, '
+        'customers, suppliers, bills, prescriptions - with a short pause between each. '
+        'Each service class writes its data out as a human-readable text file in the '
+        'data folder. A callback interface carries the completion message back to the '
+        'UI, which shows it to the user once the backup finishes.',
     'PharmacyApp.java':
-        'The application\'s starting point. It extends the JavaFX base class and overrides '
-        'the startup method where all initialisation happens: service objects are created, '
-        'the two monitoring workers are started, demo data is loaded if the data folder '
-        'is empty, and the login window appears. Screen navigation works by calling one '
-        'of several named methods, each of which builds the target screen and hands it '
-        'to the window to display.',
+        'This is the main class where execution begins. It extends Application, which '
+        'is the base class JavaFX requires as the entry point. The start method, which '
+        'JavaFX calls automatically, creates all the service objects, starts the two '
+        'background alert threads, loads sample data if the data folder is empty, '
+        'and shows the login screen. Navigation between screens is handled through '
+        'dedicated show methods - showInventoryScreen, showBillingScreen, and so on - '
+        'each of which creates the target screen object and calls setScene on the '
+        'application window to replace what is currently visible.',
     'LoginScreen.java':
-        'A grid-based form with username and password fields, the second of which masks '
-        'its input. On submission, the credentials go to the user service for checking. '
-        'A wrong entry makes a red message appear below the form. A correct entry '
-        'stores the authenticated user and hands control to the dashboard screen. '
-        'The role attached to the user object at this point determines what '
-        'options will appear throughout the rest of the session.',
+        'The login form is built using a grid layout that keeps the labels and fields '
+        'neatly aligned. The password field uses JavaFX\'s PasswordField component, '
+        'which shows dots instead of the actual characters. When the user clicks Login, '
+        'the username and password are passed to UserService. If authentication fails, '
+        'a red label appears below the button explaining why. If it succeeds, the '
+        'authenticated user object is stored in the service and the dashboard screen '
+        'is loaded. The role stored in that user object shapes what options are '
+        'available for the rest of the session.',
     'DashboardScreen.java':
-        'The home screen after login is deliberately simple - a dark header bar showing '
-        'who is logged in, and six large buttons arranged in a grid, one for each module. '
-        'A logout button in the header clears the session and returns to the login screen. '
-        'The whole layout uses a border container at the outer level with a horizontal '
-        'bar at the top and a grid in the centre.',
+        'After logging in successfully, the dashboard is the first thing the user sees. '
+        'The layout has a dark-coloured header bar across the top containing the '
+        'application name and the logged-in user\'s name and role. Below that, six '
+        'equal-sized buttons are arranged in two rows of three, each one opening a '
+        'different module. A Logout button in the header ends the session by clearing '
+        'the current user in UserService and returning to the login screen.',
     'InventoryScreen.java':
-        'This screen has the most going on visually. A scrollable table fills most of '
-        'the space, showing every medicine in stock. A form on the left handles adding '
-        'new entries and editing existing ones - clicking any table row copies that '
-        'row\'s data into the form automatically. Above the table, a text search box, '
-        'a sort selector, and a category filter all operate on the displayed list '
-        'independently of each other.',
+        'The inventory screen is the most visually complex in the system. A large table '
+        'in the centre shows all medicines currently in stock, with columns for ID, name, '
+        'category, batch, expiry date, quantity, and price. Clicking a row fills the form '
+        'on the left side with that medicine\'s details so staff can edit and save. '
+        'Above the table there are three controls: a search box that filters by medicine '
+        'name as you type, a dropdown to sort the table by name, price, or expiry date, '
+        'and a category dropdown that shows only medicines matching the selected category.',
     'BillingScreen.java':
-        'The left panel of this screen is where a new bill gets built up piece by piece. '
-        'Typing a customer ID causes the name to appear automatically. Each medicine is '
-        'added by ID and quantity, and the running total updates after each addition. '
-        'When the cashier clicks the generate button, the bill is handed off to a '
-        'background worker so the interface stays usable during processing. '
-        'The right panel shows the current bill items and a history of past bills.',
+        'The billing screen is divided into two sides. The left side is where a new bill '
+        'is assembled: the staff member enters a customer ID (the name fills automatically '
+        'from the customer database), then adds medicines one by one by entering the '
+        'medicine ID and desired quantity. The running total updates after each item is '
+        'added. An optional discount percentage can be applied before the final generate '
+        'button is clicked. Once clicked, the bill goes to a BillingThread so the '
+        'interface is not blocked during processing. The right side shows a table of '
+        'current bill items and below it a table of all past bills.',
     'SupplierScreen.java':
-        'A table of supplier records on the right, a form on the left, and four action '
-        'buttons in between. Selecting a table row fills the form. Clicking Add creates '
-        'a new record with a freshly generated ID. Update and Delete act on whatever '
-        'is currently selected. A search field above the table filters by company name.',
+        'Supplier records are managed from this screen. The layout mirrors the customer '
+        'screen: table on the right showing all suppliers, form on the left for data '
+        'entry, and a row of four buttons for Add, Update, Delete, and Clear. Clicking '
+        'a row in the table copies all its fields into the form so the staff member can '
+        'make changes without retyping everything. A search box above the table narrows '
+        'results by company name.',
     'CustomerScreen.java':
-        'Laid out the same way as the supplier screen but dealing with patient records. '
-        'The search runs against the patient name field. IDs are generated automatically '
-        'in the CUS-prefixed format. The form clears itself and deselects the table row '
-        'when the Clear button is pressed.',
+        'Patient records live in this screen. Same table-and-form layout as the supplier '
+        'screen. The search matches against the patient name. When a new customer is '
+        'added, the ID is generated automatically using IDGenerator - the staff member '
+        'does not type it. Pressing Clear empties the form and removes any table row '
+        'selection so the form is ready for a new entry.',
     'PrescriptionScreen.java':
-        'This screen is a step more involved than the others because one prescription '
-        'contains multiple medicine entries. After filling in the patient and doctor '
-        'details, the staff member adds medicines one at a time - each addition appears '
-        'in a list on screen. Saving commits the whole prescription as a single record. '
-        'Clicking an existing prescription in the table populates a text area below '
-        'with the complete details including every prescribed medicine.',
+        'Prescriptions are more complex than other records because they contain nested '
+        'items. The form on the left starts with the patient details and doctor name. '
+        'Below that is a mini-form to add one medicine at a time: enter the medicine ID, '
+        'quantity, and dosage text, then click Add Medicine. Each addition appears in a '
+        'small list on screen. Once all items are added, clicking Save builds the full '
+        'prescription object with all its items and sends it to PrescriptionService. '
+        'Clicking an existing prescription in the main table shows a full text summary '
+        'in a text area at the bottom, listing every medicine in that prescription.',
     'ReportsScreen.java':
-        'A navigation panel on the left switches between different views. The landing '
-        'view shows summary cards - coloured boxes each displaying one key number like '
-        'total medicines or total revenue. Other views show the full transaction history, '
-        'the complete stock list, medicines nearing expiry, and medicines running low. '
-        'The backup button starts the backup worker in a fresh thread and shows a '
-        'spinning indicator until the callback fires with a completion message.',
+        'The reports section is more of a dashboard than a single report. A menu column '
+        'on the left has buttons for Sales Report, Stock Report, Expiry Alerts, Low Stock '
+        'Alerts, Summary, and Backup. The summary view - which is what opens by default - '
+        'shows colour-coded cards displaying total medicines, total customers, total '
+        'suppliers, total bills, and total revenue. The expiry and low stock views pull '
+        'data from the live inventory rather than a cached snapshot. The backup button '
+        'creates a BackupService instance, starts it in a fresh thread, and shows a '
+        'spinning progress indicator in the content area until the backup callback fires.',
     'DataStore.java':
-        'Every service class needs to save its list to disk and load it back on startup. '
-        'Rather than writing that file handling code five separate times, we wrote it '
-        'once as a generic class that works with any saveable object type. The save '
-        'operation wraps the list in a binary stream and writes it out as a .dat file. '
-        'The load operation reverses that. A separate method writes the same data as '
-        'readable text for the backup copies. All four methods carry locks to prevent '
-        'a background thread from reading a file mid-write.',
+        'This is the generic file storage class used by all five service classes. '
+        'It is declared as a generic class with a type parameter that must be serialisable, '
+        'written as DataStore of T where T extends Serializable. This means the same class '
+        'handles file operations for medicines, customers, suppliers, bills, and '
+        'prescriptions without any duplication. The saveAll method takes a list and writes '
+        'it to a binary .dat file using Java\'s object stream classes. The loadAll method '
+        'reads it back and returns the list. A separate backupToText method writes the '
+        'same data as a readable text file using a character-based writer. All methods '
+        'are locked to prevent a background thread from reading a file while a save '
+        'is still in progress.',
     'IDGenerator.java':
-        'Every record type needs a unique identifier that does not repeat across sessions. '
-        'This class keeps a counter for each type - medicines, customers, suppliers, bills, '
-        'and prescriptions - and increments it each time a new ID is needed. The increment '
-        'step is locked so two threads asking for a new ID simultaneously always get '
-        'different values. On startup, the counters are nudged up to at least the highest '
-        'value already present in the saved data.',
+        'Generates unique IDs for every record type in the system. Five counters, one '
+        'per record type, start at specific values - medicines at 1000, customers at 2000, '
+        'suppliers at 3000, bills at 4000, prescriptions at 5000. Each counter increments '
+        'every time a new ID of that type is requested, giving IDs like MED1001, CUS2001, '
+        'BIL4001, and so on. Each method is locked so that if two threads request an ID '
+        'at the same moment, they get different values. An updateCounters method is called '
+        'at startup so the counters continue from where the saved data left off rather '
+        'than resetting and producing duplicate IDs.',
     'SampleDataLoader.java':
-        'The first time someone runs the application there is nothing in the database. '
-        'Rather than staring at empty tables, this class fills in ten medicines spanning '
-        'all eight categories, three customers, and three suppliers. It checks first '
-        'whether medicines already exist - if they do, the whole method returns immediately '
-        'so the demo data is never loaded twice.',
+        'On a fresh installation there is no data, which makes the application look broken. '
+        'This class solves that by loading a set of demo records on first run: ten '
+        'medicines covering all eight category types, three customers, and three suppliers. '
+        'The first thing the method does is check whether medicines already exist. If they '
+        'do, the method returns immediately without loading anything. This check ensures '
+        'the demo data loads exactly once and never overwrites real data that was added later.',
 }
 
 # ── DETAILED EXPLANATION OF EACH FILE ─────────────────────────────────────
@@ -613,30 +666,37 @@ story.append(PageBreak())
 story.append(sec_hdr('Conclusion'))
 story += [sp(6)]
 story.append(body(
-    'Getting the class structure right early on made an enormous difference to how the '
-    'rest of the project went. The first version we sketched out had screen classes doing '
-    'their own file operations, which quickly became hard to follow. Separating that out '
-    'into proper service classes meant each file had one clear responsibility. After that '
-    'split, adding the reports screen or the prescription module meant writing a new screen '
-    'file and a new service file - nothing else needed to change.'
+    'The Pharmacy Management System came together as a working application that we could '
+    'run, demo with real data, and actually use to process a bill end-to-end. That matters '
+    'to us because a lot of lab projects stop at "it compiles and the output is correct." '
+    'This one has a real interface, saves data between sessions, and runs background '
+    'monitoring without the user doing anything. The design decisions we made early on - '
+    'separating service logic from screen code, using a generic class for file storage, '
+    'building the threading around proper daemon threads and volatile flags - all of those '
+    'paid off when it came to adding the later modules. Adding the prescription screen '
+    'or the reports section did not require changes to any existing class.'
 ))
 story.append(body(
-    'The background thread work was something none of us had done in a full application '
-    'before this project. Getting the expiry alerts to update the UI correctly took several '
-    'tries - early attempts updated JavaFX components directly from the background thread, '
-    'which caused intermittent crashes. The fix was to wrap those updates inside a call '
-    'that schedules them back onto the main thread. Once we understood why that was needed, '
-    'the rest of the threading work went much more smoothly.'
+    'Threading was the part that took the most time to get right. Our first version of '
+    'the billing screen updated a status label directly from inside the BillingThread. '
+    'The application crashed sometimes and worked other times - which is exactly the '
+    'kind of intermittent bug that is hard to track down. After reading about JavaFX\'s '
+    'threading rules, we understood that UI components can only be modified from the '
+    'main application thread. The fix - wrapping the label update inside a call that '
+    'schedules it to run on the correct thread - was a one-line change that made the '
+    'crashes disappear entirely. It was a frustrating bug to hit but a genuinely useful '
+    'thing to understand.'
 ))
 story.append(body(
-    'Stepping back, this project touched every concept on the lab syllabus - but more '
-    'importantly, each one appeared because the problem needed it, not because we were '
-    'looking for a place to slot it in. Private fields with accessor methods kept data '
-    'from being changed arbitrarily. The generic storage class eliminated four copies of '
-    'identical file-handling code. The enum types caught category mismatches at compile '
-    'time rather than runtime. Locks on the service methods protected data that two '
-    'threads could otherwise corrupt simultaneously. The application ended up being a '
-    'genuinely working piece of software, which made the whole exercise worth doing.'
+    'Looking at the complete file list, every OOP concept from the course syllabus '
+    'is present and used for a real reason. Encapsulation in the model classes keeps '
+    'fields from being set to invalid values from outside. Inheritance appears in the '
+    'Thread subclasses and in extending Application. Polymorphism shows up in the '
+    'overloaded discount methods and in the callback interfaces shared between threads '
+    'and UI classes. Generics in DataStore removed four copies of identical persistence '
+    'code. Enums in MedicineCategory and UserRole removed whole categories of runtime '
+    'bugs. The project ended up being a solid demonstration of why these concepts exist, '
+    'not just what they are called.'
 ))
 
 # ── INDIVIDUAL CONTRIBUTIONS ───────────────────────────────────────────────
@@ -670,14 +730,16 @@ for name, files in contribs:
 
 story += [sp(8)]
 story.append(body(
-    'The work was divided based on each person\'s strengths, but the nature of an OOP '
-    'project means the parts are never truly independent. Kenneth\'s login flow needed '
-    'the User and UserRole classes Sam had started. Rayyan\'s billing screen needed '
-    'the DataStore and IDGenerator that Vedank was building. We spent a lot of time '
-    'on a shared call resolving method signature mismatches and missing imports. '
-    'That kind of back-and-forth might sound inefficient but it\'s actually what '
-    'kept the four parts from drifting into four different styles - the final codebase '
-    'reads like it was written by one person, which we consider the best outcome.'
+    'We split the work by module but spent a lot of time in each other\'s code anyway. '
+    'When Kenneth was building the login screen he needed the User class and UserRole enum '
+    'that Sam was still writing - so they sat together and finalised those first before '
+    'the login screen could be completed. Rayyan could not test the billing screen until '
+    'Vedank had the DataStore class working because nothing could be saved otherwise. '
+    'That kind of dependency forced us to communicate constantly, which turned out to be '
+    'good for the project. We caught mismatches in method signatures early, agreed on '
+    'naming conventions together, and reviewed each other\'s code before merging. '
+    'The result is a codebase that is consistent throughout - not four separate pieces '
+    'written by four people independently, but one system built by a team.'
 ))
 
 # ── REFERENCES ─────────────────────────────────────────────────────────────
